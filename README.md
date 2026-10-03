@@ -16,12 +16,9 @@ netlify.toml        Publicación desde la raíz, sin build command
 DESIGN.md           Design system de referencia
 ```
 
-## Pendientes (TODO)
+## Sitio publicado
 
-Buscá `TODO` en el proyecto (`grep -rn TODO index.html js css`). Falta completar:
-
-- [ ] **Open Graph**: cuando tengas la URL de Netlify, poné rutas absolutas en `og:image`
-      (ej. `https://tu-sitio.netlify.app/assets/og-image.png`) y agregá `og:url`.
+<https://rivuz-portfolio.netlify.app/> (Netlify, rama `main`). Cada merge a `main` se publica solo.
 
 ## Cómo editar los proyectos
 
