@@ -20,11 +20,13 @@
  *  hero     false para no usarla en el collage del hero (se usan las primeras 6).
  */
 const projects = [
-  { title: 'Tackr Jobs', type: 'sitio', status: 'terminado', url: 'https://tackrjobs.com/es', image: 'assets/projects/tackr-jobs.webp', alt: 'Home de Tackr Jobs: buscador de perfiles con IA y la pregunta “Hola, ¿qué perfil estás buscando hoy?”', focus: '50% 30%' },
-  { title: 'FOODTEX', type: 'sitio', status: 'desarrollo', url: 'https://foodtex-propuesta-2.netlify.app/', image: 'assets/projects/foodtex.webp', alt: 'Hero de FOODTEX: “Tecnología que mueve tu industria” junto a una cinta transportadora industrial', focus: '72% 50%' },
-  { title: 'BCM Products', type: 'sitio', status: 'desarrollo', url: 'https://bcm-products-motion.lihuensg.chatgpt.site/', image: 'assets/projects/bcm-products.webp', alt: 'Hero de BCM Products: “Un iPhone. Mil posibilidades.” con un iPhone bordó', focus: '30% 50%' },
   { title: 'Tackr Scout', type: 'behance', status: 'terminado', url: 'https://www.behance.net/gallery/244458863/Tackr-Scout-UX-UI-Landing-Page', image: 'assets/projects/tackr-scout.webp', alt: 'Landing de Tackr Scout: dos celulares con la app de búsqueda de talento tech', focus: '50% 50%' },
+  { title: 'FOODTEX', type: 'sitio', status: 'desarrollo', url: 'https://foodtex-propuesta-2.netlify.app/', image: 'assets/projects/foodtex.webp', alt: 'Hero de FOODTEX: “Tecnología que mueve tu industria” junto a una cinta transportadora industrial', focus: '0% 50%' },
+  { title: '3D Design', type: 'behance', status: 'terminado', url: 'https://www.behance.net/rodrigomignola', image: 'assets/projects/3d-design.webp', alt: 'Render 3D de un teclado mecánico con teclas azules sobre fondo rojo', focus: '50% 50%' },
+  { title: 'Tackr Jobs', type: 'sitio', status: 'terminado', url: 'https://tackrjobs.com/es', image: 'assets/projects/tackr-jobs.webp', alt: 'Home de Tackr Jobs: buscador de perfiles con IA y la pregunta “Hola, ¿qué perfil estás buscando hoy?”', focus: '50% 30%' },
+  { title: 'BCM Products', type: 'sitio', status: 'desarrollo', url: 'https://bcm-products-motion.lihuensg.chatgpt.site/', image: 'assets/projects/bcm-products.webp', alt: 'Hero de BCM Products: “Un iPhone. Mil posibilidades.” con un iPhone bordó', focus: '100% 50%' },
   { title: 'HLTV.org Redesign', type: 'behance', status: 'redesign', url: 'https://www.behance.net/gallery/199721495/HLTVorg-Redesign-UX-UI-Case-Study', image: 'assets/projects/hltv-redesign.webp', alt: 'Portada del caso de estudio del rediseño de HLTV.org con la web en una notebook', focus: '62% 50%' },
+  { title: 'La Alameda', type: 'sitio', status: 'terminado', url: 'https://www.laalameda.com.ar/', image: 'assets/projects/la-alameda.webp', alt: 'Home de La Alameda: “Elegí tu lote ideal” con el plano aéreo de los lotes', focus: '50% 40%' },
   {
     title: 'Basalto', type: 'galeria', status: 'terminado', image: 'assets/projects/basalto.webp', alt: 'TODO: describir el diseño de Basalto',
     hero: false, // TODO: quitar cuando esté la miniatura real (así aparece en el collage del hero)
@@ -37,8 +39,6 @@ const projects = [
     ],
   },
   { title: 'Mariela Martinez Negocios Inmobiliarios', type: 'sitio', status: 'terminado', url: 'https://marielamartinezinmobiliaria.com.ar/', image: 'assets/projects/mariela-martinez.webp', alt: 'Home de Mariela Martinez Negocios Inmobiliarios: buscador de propiedades sobre una vista aérea de la ciudad', focus: '50% 50%' },
-  { title: 'La Alameda', type: 'sitio', status: 'terminado', url: 'https://www.laalameda.com.ar/', image: 'assets/projects/la-alameda.webp', alt: 'Home de La Alameda: “Elegí tu lote ideal” con el plano aéreo de los lotes', focus: '50% 40%' },
-  { title: '3D Design', type: 'behance', status: 'terminado', url: 'https://www.behance.net/rodrigomignola', image: 'assets/projects/3d-design.webp', alt: 'Render 3D de un teclado mecánico con teclas azules sobre fondo rojo', focus: '50% 50%' },
 ];
 
 /** FILTROS — `id` debe coincidir con el `status` de los proyectos ("all" = todos). */
@@ -184,6 +184,7 @@ function initProjects(cards) {
     pinned: false,        // lo activa initProjectsPin
     goTo: null,           // lo define el pin para navegar con el scroll vertical
     onCardsChange: null,  // lo define el pin para reconstruirse al filtrar
+    onOpen: null,         // lo define el pin: mueve el carril para mostrar la card abierta
     setActive(i) {
       const n = this.cards.length;
       i = Math.max(0, Math.min(n - 1, i));
@@ -197,6 +198,8 @@ function initProjects(cards) {
     syncOpen() {
       const open = this.hovered ?? this.active;
       this.cards.forEach((c, k) => c.classList.toggle('is-open', k === open));
+      if (this.onOpen) this.onOpen(open);
+      else if (this.hovered !== null && isAccordion()) revealCard(open);
     },
     setCards(next) {
       this.cards = next;
@@ -209,6 +212,27 @@ function initProjects(cards) {
   };
 
   const isAccordion = () => media.desktop.matches;
+
+  // Acordeón sin pin (ej. reduced-motion): si la card abierta con el mouse queda cortada
+  // en un borde, se desplaza el scroll horizontal lo justo para verla entera.
+  let revealTimer = 0;
+  function revealCard(i) {
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(() => { // esperar a que termine de expandirse
+      const card = ctl.cards[i];
+      if (!card) return;
+      // deja asomar la card vecina para poder seguir con el mouse
+      const peek = 80;
+      const mR = i < ctl.cards.length - 1 ? peek : 24;
+      const mL = i > 0 ? peek : 24;
+      const vr = viewport.getBoundingClientRect();
+      const r = card.getBoundingClientRect();
+      let delta = 0;
+      if (r.right > vr.right - mR) delta = r.right - (vr.right - mR);
+      else if (r.left < vr.left + mL) delta = r.left - (vr.left + mL);
+      if (delta) viewport.scrollBy({ left: delta, behavior: motionOK() ? 'smooth' : 'auto' });
+    }, 400);
+  }
   const applyMode = () => section.classList.toggle('is-accordion', isAccordion());
   applyMode();
   media.desktop.addEventListener('change', applyMode);
@@ -580,6 +604,24 @@ function initProjectsPin(ctl) {
       const moveTo = (i, instant) =>
         gsap.to(track, { x: xFor(i), duration: instant ? 0 : 0.9, ease: 'power3.out', overwrite: true });
 
+      // Card abierta con el mouse: correr el carril lo mínimo para que se vea entera
+      // (así se llega con el mouse a las cards de los costados). Sin hover vuelve a la activa.
+      const revealX = (i) => {
+        const n = count();
+        const vw = viewport.clientWidth;
+        // deja asomar la mitad de la card vecina: siempre hay "a dónde ir" con el mouse
+        const peek = gap + narrow * 0.5;
+        const mR = i < n - 1 ? peek : 24;
+        const mL = i > 0 ? peek : 24;
+        const totalW = padL + padR + wide + (n - 1) * (narrow + gap);
+        const left = padL + i * (narrow + gap);
+        const right = left + wide;
+        let x = gsap.getProperty(track, 'x');
+        if (right + x > vw - mR) x = vw - mR - right;
+        if (left + x < mL) x = mL - left;
+        return Math.max(Math.min(x, 0), Math.min(vw - totalW, 0));
+      };
+
       let st = null;
       // (Re)construye el pin según la cantidad de cards visibles (cambia con el filtro)
       const build = () => {
@@ -603,7 +645,11 @@ function initProjectsPin(ctl) {
           onRefresh: () => { measure(); moveTo(ctl.active, true); },
           onUpdate: (self) => {
             const i = Math.round(self.progress * (count() - 1));
-            if (i !== ctl.active) { ctl.setActive(i); moveTo(i); }
+            if (i !== ctl.active) {
+            ctl.hovered = null; // al scrollear manda el scroll, aunque el mouse esté sobre una card
+            ctl.setActive(i);
+            moveTo(i);
+          }
           },
         });
         // Flechas y foco con teclado: navegan moviendo el scroll vertical
@@ -613,6 +659,11 @@ function initProjectsPin(ctl) {
           scrollTo({ top: y, behavior: 'smooth' });
         };
         moveTo(ctl.active, true);
+      };
+      ctl.onOpen = (i) => {
+        if (!st) return;
+        if (ctl.hovered === null) moveTo(ctl.active);
+        else gsap.to(track, { x: revealX(i), duration: 0.9, ease: 'power3.out', overwrite: true });
       };
 
       build();
@@ -630,6 +681,7 @@ function initProjectsPin(ctl) {
         ctl.pinned = false;
         ctl.goTo = null;
         ctl.onCardsChange = null;
+        ctl.onOpen = null;
         probe.remove();
         gsap.set(track, { clearProps: 'transform' });
       };
