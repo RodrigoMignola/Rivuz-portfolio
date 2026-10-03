@@ -15,17 +15,19 @@
  *  gallery  Solo para type "galeria": lista de imágenes { src, alt } (WebP, 1200×1000 o similar).
  *  image    Miniatura WebP (recomendado 1200×1000). Se recorta con object-fit: cover.
  *  alt      Descripción breve de la miniatura.
+ *  focus    Opcional: qué parte de la imagen priorizar al recortar (object-position),
+ *           ej. "72% 50%" = más hacia la derecha. Por defecto "50% 50%" (centro).
  *  hero     false para no usarla en el collage del hero (se usan las primeras 6).
  */
 const projects = [
-  // TODO (todos): reemplazar las miniaturas placeholder y completar el `alt`
-  { title: 'Tackr Jobs', type: 'sitio', status: 'terminado', url: 'https://tackrjobs.com/es', image: 'assets/projects/tackr-jobs.webp', alt: 'TODO: describir el diseño de Tackr Jobs' },
-  { title: 'FOODTEX', type: 'sitio', status: 'desarrollo', url: 'https://foodtex-propuesta-2.netlify.app/', image: 'assets/projects/foodtex.webp', alt: 'TODO: describir el diseño de FOODTEX' },
-  { title: 'BCM Products', type: 'sitio', status: 'desarrollo', url: 'https://bcm-products-motion.lihuensg.chatgpt.site/', image: 'assets/projects/bcm-products.webp', alt: 'TODO: describir el diseño de BCM Products' },
-  { title: 'Tackr Scout', type: 'behance', status: 'terminado', url: 'https://www.behance.net/gallery/244458863/Tackr-Scout-UX-UI-Landing-Page', image: 'assets/projects/tackr-scout.webp', alt: 'TODO: describir el diseño de Tackr Scout' },
-  { title: 'HLTV.org Redesign', type: 'behance', status: 'redesign', url: 'https://www.behance.net/gallery/199721495/HLTVorg-Redesign-UX-UI-Case-Study', image: 'assets/projects/hltv-redesign.webp', alt: 'TODO: describir el rediseño de HLTV.org' },
+  { title: 'Tackr Jobs', type: 'sitio', status: 'terminado', url: 'https://tackrjobs.com/es', image: 'assets/projects/tackr-jobs.webp', alt: 'Home de Tackr Jobs: buscador de perfiles con IA y la pregunta “Hola, ¿qué perfil estás buscando hoy?”', focus: '50% 30%' },
+  { title: 'FOODTEX', type: 'sitio', status: 'desarrollo', url: 'https://foodtex-propuesta-2.netlify.app/', image: 'assets/projects/foodtex.webp', alt: 'Hero de FOODTEX: “Tecnología que mueve tu industria” junto a una cinta transportadora industrial', focus: '72% 50%' },
+  { title: 'BCM Products', type: 'sitio', status: 'desarrollo', url: 'https://bcm-products-motion.lihuensg.chatgpt.site/', image: 'assets/projects/bcm-products.webp', alt: 'Hero de BCM Products: “Un iPhone. Mil posibilidades.” con un iPhone bordó', focus: '30% 50%' },
+  { title: 'Tackr Scout', type: 'behance', status: 'terminado', url: 'https://www.behance.net/gallery/244458863/Tackr-Scout-UX-UI-Landing-Page', image: 'assets/projects/tackr-scout.webp', alt: 'Landing de Tackr Scout: dos celulares con la app de búsqueda de talento tech', focus: '50% 50%' },
+  { title: 'HLTV.org Redesign', type: 'behance', status: 'redesign', url: 'https://www.behance.net/gallery/199721495/HLTVorg-Redesign-UX-UI-Case-Study', image: 'assets/projects/hltv-redesign.webp', alt: 'Portada del caso de estudio del rediseño de HLTV.org con la web en una notebook', focus: '62% 50%' },
   {
     title: 'Basalto', type: 'galeria', status: 'terminado', image: 'assets/projects/basalto.webp', alt: 'TODO: describir el diseño de Basalto',
+    hero: false, // TODO: quitar cuando esté la miniatura real (así aparece en el collage del hero)
     // TODO: reemplazar por las imágenes finales de Basalto (assets/projects/basalto/)
     gallery: [
       { src: 'assets/projects/basalto/basalto-01.webp', alt: 'TODO: Basalto, imagen 1' },
@@ -34,9 +36,9 @@ const projects = [
       { src: 'assets/projects/basalto/basalto-04.webp', alt: 'TODO: Basalto, imagen 4' },
     ],
   },
-  { title: 'Mariela Martinez Negocios Inmobiliarios', type: 'sitio', status: 'terminado', url: 'https://marielamartinezinmobiliaria.com.ar/', image: 'assets/projects/mariela-martinez.webp', alt: 'TODO: describir el diseño de Mariela Martinez Negocios Inmobiliarios' },
-  { title: 'La Alameda', type: 'sitio', status: 'terminado', url: 'https://www.laalameda.com.ar/', image: 'assets/projects/la-alameda.webp', alt: 'TODO: describir el diseño de La Alameda' },
-  { title: '3D Design', type: 'behance', status: 'terminado', url: 'https://www.behance.net/rodrigomignola', image: 'assets/projects/3d-design.webp', alt: 'TODO: describir los trabajos de diseño 3D' },
+  { title: 'Mariela Martinez Negocios Inmobiliarios', type: 'sitio', status: 'terminado', url: 'https://marielamartinezinmobiliaria.com.ar/', image: 'assets/projects/mariela-martinez.webp', alt: 'Home de Mariela Martinez Negocios Inmobiliarios: buscador de propiedades sobre una vista aérea de la ciudad', focus: '50% 50%' },
+  { title: 'La Alameda', type: 'sitio', status: 'terminado', url: 'https://www.laalameda.com.ar/', image: 'assets/projects/la-alameda.webp', alt: 'Home de La Alameda: “Elegí tu lote ideal” con el plano aéreo de los lotes', focus: '50% 40%' },
+  { title: '3D Design', type: 'behance', status: 'terminado', url: 'https://www.behance.net/rodrigomignola', image: 'assets/projects/3d-design.webp', alt: 'Render 3D de un teclado mecánico con teclas azules sobre fondo rojo', focus: '50% 50%' },
 ];
 
 /** FILTROS — `id` debe coincidir con el `status` de los proyectos ("all" = todos). */
@@ -89,7 +91,7 @@ function renderCollage() {
       <div class="collage__item" style="--i:${i};--depth:${[0.35, 0.6, 0.5, 0.3, 0.7, 0.45][i]}">
         <div class="collage__drift">
           <div class="polaroid">
-            <img src="${escapeHTML(p.image)}" alt="" width="1200" height="1000" loading="lazy" decoding="async">
+            <img src="${escapeHTML(p.image)}" alt="" width="1200" height="1000" loading="lazy" decoding="async"${p.focus ? ` style="object-position:${escapeHTML(p.focus)}"` : ''}>
           </div>
         </div>
       </div>`
@@ -140,7 +142,7 @@ function renderProjects(list) {
       <li class="card" style="--ci:${i}">
         <a class="card__link" href="${escapeHTML(href)}" ${attrs} data-cursor="view">
           <div class="card__frame">
-            <img class="card__img" src="${escapeHTML(p.image)}" alt="${escapeHTML(p.alt || p.title)}" width="1200" height="1000" loading="lazy" decoding="async">
+            <img class="card__img" src="${escapeHTML(p.image)}" alt="${escapeHTML(p.alt || p.title)}"${p.focus ? ` style="object-position:${escapeHTML(p.focus)}"` : ''} width="1200" height="1000" loading="lazy" decoding="async">
             <span class="card__index" aria-hidden="true">${pad(i + 1)}</span>
             <div class="card__body">
               <span class="tag tag--${tone}">${type.label}</span>
