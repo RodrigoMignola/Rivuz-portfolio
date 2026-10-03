@@ -203,7 +203,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   padding-right: 0.08em; /* evita que la cursiva se recorte */
 }
 @media (forced-colors: active) {
-  .gradient-text { background: none; color: CanvasText; }
+  .gradient-text, .hero .gradient-text { background: none; color: CanvasText; animation: none; }
 }
 
 /* 4. UTILIDADES =========================================================== */
@@ -256,6 +256,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background-size: 22px 22px;
   -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 20%, transparent 80%);
   mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 20%, transparent 80%);
+}
+.bg__light {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .bg__glow {
   position: absolute;
@@ -441,31 +447,70 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .word__in { display: inline-block; }
 .word--italic { padding-right: 0.06em; }
 
-/* Collage: cards Polaroid inclinadas, cortadas por el viewport.
-   item = posición + parallax scroll, drift = parallax mouse, polaroid = rotación/entrada */
+/* Collage: cards Polaroid en 3D, cortadas por los bordes laterales.
+   item = posición + vuelo 3D con el scroll · drift = inclinación con el mouse
+   float = flotación 3D continua · polaroid = ángulo, entrada y hover */
 .hero__collage {
   position: absolute;
   inset: 0;
   z-index: var(--z-collage);
   pointer-events: none;
 }
+/* el texto queda encima, pero deja pasar el mouse hacia las cards (salvo el CTA) */
+.hero__content { pointer-events: none; }
+.hero__content a { pointer-events: auto; }
 
 .collage__item {
+  --dir: -1; /* hacia dónde vuela al scrollear: impares a la izquierda, pares a la derecha */
   position: absolute;
   width: var(--w);
   left: var(--x, auto);
   right: var(--xr, auto);
   top: var(--y, auto);
   bottom: var(--yb, auto);
+  perspective: 900px;
 }
-.collage__drift { will-change: transform; }
+.collage__item:nth-child(even) { --dir: 1; }
+.collage__item:hover { z-index: 2; }
+.collage__drift,
+.collage__float {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
 
 .polaroid {
+  position: relative;
+  display: block;
   padding: 6px;
   border-radius: var(--radius-cards);
   background: var(--surface-card);
   box-shadow: var(--hairline);
   transform: rotate(var(--r));
+  pointer-events: auto;
+  transition: transform var(--dur-slow) var(--ease-out), box-shadow var(--dur-slow) var(--ease-out);
+}
+/* Hover (desktop): la card se endereza, se acerca y muestra el nombre del proyecto */
+.polaroid__label {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  padding: 6px 12px;
+  border-radius: var(--radius-tags);
+  background: var(--surface-card);
+  box-shadow: var(--hairline);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .polaroid:hover {
+    transform: rotate(0deg) translateZ(60px) scale(1.06);
+    box-shadow: var(--shadow-subtle-3);
+  }
+  .polaroid:hover .polaroid__label { opacity: 1; transform: translate(-50%, 0); }
 }
 .polaroid img {
   width: 100%;
@@ -938,6 +983,46 @@ html:has(.gallery[open]) { overflow: hidden; }
 }
 
 
+/* Intro de marca (solo con html.has-intro: primera visita y sin reduced-motion) */
+.intro { display: none; }
+.has-intro { --intro-delay: 1250ms; }
+.has-intro .intro {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-cursor) + 10);
+  display: grid;
+  place-items: center;
+  background: var(--color-portrait-ink);
+  /* borde inferior curvo: se nota la "cortina" al subir */
+  border-radius: 0 0 50% 50% / 0 0 14vh 14vh;
+  animation: intro-curtain 900ms cubic-bezier(0.76, 0, 0.24, 1) 1000ms forwards;
+}
+.intro__logo {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(88px, 22vw, 160px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-white-canvas);
+  animation: intro-logo-out 500ms var(--ease-out) 900ms forwards;
+}
+.intro__mask { display: inline-block; overflow: clip; padding-block: 0.06em; }
+.intro__r { display: inline-block; animation: intro-r 700ms var(--ease-out) 100ms both; }
+.intro__dot {
+  width: 0.2em;
+  height: 0.2em;
+  margin-left: 0.04em;
+  border-radius: 50%;
+  background: var(--color-brand-4);
+  animation: intro-dot 550ms cubic-bezier(0.34, 1.56, 0.64, 1) 450ms both;
+}
+@keyframes intro-r { from { transform: translateY(105%); } }
+@keyframes intro-dot { from { transform: scale(0); } }
+@keyframes intro-logo-out { to { transform: translateY(-40px); opacity: 0; } }
+@keyframes intro-curtain { to { transform: translateY(-110%); visibility: hidden; } }
+
 /* 10. MOTION =============================================================
    Todo anima solo transform/opacity. Con prefers-reduced-motion: reduce,
    no corre nada y todo queda visible en su estado final. */
@@ -1002,9 +1087,24 @@ html:has(.gallery[open]) { overflow: hidden; }
   .btn-gradient__ring::before { animation: ring-flow 7s linear infinite; }
 
   /* Entrada del hero: palabras con máscara, luego eyebrow, CTA y collage escalonado */
-  .word__in { animation: word-in var(--dur-slow) var(--ease-out) calc(160ms + var(--wi, 0) * 80ms) both; }
-  .hero__cta { animation: fade-up var(--dur-slow) var(--ease-out) 560ms both; }
-  .polaroid { animation: polaroid-in var(--dur-slow) var(--ease-out) calc(300ms + var(--i, 0) * 90ms) both; }
+  .word__in { animation: word-in var(--dur-slow) var(--ease-out) calc(var(--intro-delay, 0ms) + 160ms + var(--wi, 0) * 80ms) both; }
+  .hero__cta { animation: fade-up var(--dur-slow) var(--ease-out) calc(var(--intro-delay, 0ms) + 560ms) both; }
+  /* fill "backwards": al terminar vuelve al estilo base, así el hover puede enderezar la card */
+  .polaroid { animation: polaroid-in 900ms var(--ease-out) calc(var(--intro-delay, 0ms) + 300ms + var(--i, 0) * 90ms) backwards; }
+
+  /* Flotación 3D continua (celular y desktop): cada card con su propio ritmo */
+  .collage__float { animation: card-float calc(6s + var(--i, 0) * 0.7s) ease-in-out calc(var(--i, 0) * -1.3s) infinite alternate; }
+
+  /* Brillo que recorre RIVUZ cada pocos segundos (después de la entrada) */
+  .hero .gradient-text {
+    background-image: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.85) 50%, transparent 62%), var(--gradient-brand);
+    background-size: 250% 100%, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 160% 0, 0 0;
+    animation:
+      word-in var(--dur-slow) var(--ease-out) calc(var(--intro-delay, 0ms) + 400ms) both,
+      shine 5.5s ease-in-out calc(var(--intro-delay, 0ms) + 1.6s) infinite;
+  }
 
 }
 
@@ -1026,6 +1126,15 @@ html:has(.gallery[open]) { overflow: hidden; }
   from { transform: translateY(110%) rotate(4deg); }
   to { transform: none; }
 }
+@keyframes card-float {
+  from { transform: translate3d(0, 6px, 0) rotateX(0deg) rotateY(0deg); }
+  to { transform: translate3d(0, -10px, 30px) rotateX(7deg) rotateY(calc(var(--dir, 1) * -9deg)); }
+}
+/* El reflejo cruza en el primer tramo y después espera */
+@keyframes shine {
+  0% { background-position: 160% 0, 0 0; }
+  28%, 100% { background-position: -60% 0, 0 0; }
+}
 /* Las cards llegan más inclinadas y se enderezan hasta su ángulo final */
 @keyframes polaroid-in {
   from { opacity: 0; transform: translateY(48px) rotate(calc(var(--r) * 2.6)) scale(0.88); }
@@ -1036,14 +1145,29 @@ html:has(.gallery[open]) { overflow: hidden; }
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
     .collage__item {
-      animation: collage-parallax linear both;
+      animation: collage-flyout linear both;
       animation-timeline: scroll(root block);
-      animation-range: 0 100vh;
+      animation-range: 0 85vh;
+    }
+    .hero__content {
+      animation: hero-recede linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 85vh;
     }
   }
 }
-@keyframes collage-parallax {
-  to { transform: translate3d(0, calc(var(--depth, 0.5) * -240px), 0); }
+/* Al bajar, las cards "salen volando" hacia su costado y hacia la cámara */
+@keyframes collage-flyout {
+  to {
+    transform:
+      translate3d(calc(var(--dir) * (12vw + var(--depth, 0.5) * 18vw)), calc(var(--depth, 0.5) * -200px), 0)
+      rotate(calc(var(--dir) * 10deg))
+      scale(calc(1.15 + var(--depth, 0.5) * 0.35));
+    opacity: 0;
+  }
+}
+@keyframes hero-recede {
+  to { transform: translate3d(0, 60px, 0) scale(0.94); opacity: 0; }
 }
 
 /* Revelado al scroll: fade + translate + leve scale, con stagger (--i).

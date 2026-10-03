@@ -120,14 +120,16 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
 |---|---|---|
 | Proyectos | Carrusel nativo con scroll-snap, la card centrada se destaca | Sección con pin: el scroll vertical avanza las cards y abre la activa; con el mouse, la card se expande y el carril se corre para mostrarla (se llega a todas). Con un solo proyecto filtrado no hay pin |
 | Filtro | Las cards salen y entran escalonadas | Igual, y el pin se recalcula según la cantidad de cards |
-| Hero | Entrada animada + parallax de scroll | + parallax con el mouse |
+| Intro | Cortina azul con la "R." que sube (solo primera visita de la sesión) | Igual |
+| Hero | Cards flotando en 3D; al scrollear salen volando hacia los costados y el titular se aleja; brillo que recorre "RIVUZ" | + el collage se inclina con el mouse; hover en una card la endereza y muestra el nombre (clic abre el proyecto) |
+| Luz | Recorre la grilla de puntos sola; al tocar sale una onda de luz | Sigue al mouse (si queda quieto, vuelve al recorrido automático) |
 | Cursor | Nativo | Nativo + una burbuja "Ver" que aparece solo sobre las cards |
 | Botones | `:active` | Magnéticos (suaves, máx. 6px) |
 | Fondo | Grilla de puntos + 3 luces en triada (azul, rosa, lima) que derivan lento | Igual |
 
 **Accesibilidad y fallbacks**
 
-- Con `prefers-reduced-motion: reduce` no se carga GSAP, no hay pin, parallax, burbuja ni fondo animado, y todo
+- Con `prefers-reduced-motion: reduce` no se carga GSAP, no hay intro, pin, parallax, luz, burbuja ni fondo animado, y todo
   queda visible en su estado final.
 - Sin JavaScript, el hero y el contacto funcionan; las cards de proyectos necesitan JS
   porque se generan desde el array.

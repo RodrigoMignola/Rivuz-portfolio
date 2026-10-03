@@ -36,11 +36,26 @@
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap">
   </noscript>
 
-  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <script>
+    // JS activo + intro solo en la primera visita de la sesión y sin reduced-motion
+    (function (h) {
+      h.classList.replace('no-js', 'js');
+      try {
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('rivuz-intro')) {
+          h.classList.add('has-intro');
+          sessionStorage.setItem('rivuz-intro', '1');
+        }
+      } catch (e) { /* sin storage: sin intro */ }
+    })(document.documentElement);
+  </script>
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/main.js" defer></script>
 </head>
 <body>
+  <!-- Intro de marca (solo primera visita): la "R." aparece y la cortina sube revelando el hero -->
+  <div class="intro" aria-hidden="true" data-intro>
+    <div class="intro__logo"><span class="intro__mask"><span class="intro__r">R</span></span><span class="intro__dot"></span></div>
+  </div>
   <a class="skip-link" href="#proyectos">Saltar a los proyectos</a>
 
   <!-- Fondo: grilla de puntos + resplandores azules que se desplazan lento (decorativo) -->
@@ -48,6 +63,8 @@
     <span class="bg__glow bg__glow--1"></span>
     <span class="bg__glow bg__glow--2"></span>
     <span class="bg__glow bg__glow--3"></span>
+    <!-- Luz interactiva sobre la grilla de puntos (main.js) -->
+    <canvas class="bg__light" data-light></canvas>
   </div>
 
   <!-- Barra de progreso de scroll (CSS scroll-timeline, con fallback JS) -->

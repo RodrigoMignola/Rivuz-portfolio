@@ -80,22 +80,36 @@ const ICON_ARROW_UP_RIGHT =
 const ICON_EXPAND =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h5v5M9 20H4v-5M20 4l-6 6M4 20l6-6"/></svg>';
 
-/* Hero: collage generado desde `projects` -------------------------------- */
+/* Hero: collage generado desde `projects` --------------------------------
+   Estructura: item (posición + vuelo 3D con el scroll) > drift (inclinación con el mouse)
+   > float (flotación 3D continua) > polaroid (ángulo, entrada y hover).
+   Es decorativo para lectores de pantalla (aria-hidden); los links tienen tabindex -1
+   porque esos mismos proyectos están accesibles en la sección Proyectos. */
+const COLLAGE_DEPTH = [0.35, 0.6, 0.5, 0.3, 0.7, 0.45];
+
 function renderCollage() {
   const root = $('[data-collage]');
   if (!root) return;
   const items = projects.filter((p) => p.hero !== false && p.image).slice(0, 6);
   root.innerHTML = items
-    .map(
-      (p, i) => `
-      <div class="collage__item" style="--i:${i};--depth:${[0.35, 0.6, 0.5, 0.3, 0.7, 0.45][i]}">
+    .map((p, i) => {
+      const isGallery = p.type === 'galeria';
+      const href = isGallery ? p.gallery?.[0]?.src || p.image : p.url;
+      const attrs = isGallery
+        ? `data-gallery="${projects.indexOf(p)}"`
+        : 'target="_blank" rel="noopener noreferrer"';
+      return `
+      <div class="collage__item" style="--i:${i};--depth:${COLLAGE_DEPTH[i]}">
         <div class="collage__drift">
-          <div class="polaroid">
-            <img src="${escapeHTML(p.image)}" alt="" width="1200" height="1000" loading="lazy" decoding="async"${p.focus ? ` style="object-position:${escapeHTML(p.focus)}"` : ''}>
+          <div class="collage__float">
+            <a class="polaroid" href="${escapeHTML(href)}" ${attrs} tabindex="-1" data-cursor="view">
+              <img src="${escapeHTML(p.image)}" alt="" width="1200" height="1000" loading="lazy" decoding="async"${p.focus ? ` style="object-position:${escapeHTML(p.focus)}"` : ''}>
+              <span class="polaroid__label">${escapeHTML(p.title)}</span>
+            </a>
           </div>
         </div>
-      </div>`
-    )
+      </div>`;
+    })
     .join('');
 }
 
@@ -460,12 +474,24 @@ function initCollageParallax() {
   if (!hero || !items.length || !motionOK()) return;
   const depth = (el) => parseFloat(el.style.getPropertyValue('--depth')) || 0.5;
 
-  // Fallback para navegadores sin scroll-timeline (ej. Firefox)
+  // Fallback para navegadores sin scroll-timeline (ej. Firefox): mismo "vuelo" que el CSS.
+  // Las cards impares están a la izquierda (salen hacia la izquierda) y las pares a la derecha.
   if (!supportsScrollTimeline) {
+    const content = $('.hero__content');
     let ticking = false;
     const onScroll = () => {
-      const p = Math.min(scrollY / innerHeight, 1);
-      items.forEach((el) => { el.style.transform = `translate3d(0, ${(-240 * depth(el) * p).toFixed(1)}px, 0)`; });
+      const p = Math.min(scrollY / (innerHeight * 0.85), 1);
+      items.forEach((el, i) => {
+        const d = depth(el);
+        const dir = i % 2 === 0 ? -1 : 1;
+        const x = dir * (12 + d * 18) * innerWidth / 100 * p;
+        el.style.transform = `translate3d(${x.toFixed(1)}px, ${(-200 * d * p).toFixed(1)}px, 0) rotate(${dir * 10 * p}deg) scale(${1 + (0.15 + d * 0.35) * p})`;
+        el.style.opacity = String(1 - p);
+      });
+      if (content) {
+        content.style.transform = `translate3d(0, ${60 * p}px, 0) scale(${1 - 0.06 * p})`;
+        content.style.opacity = String(1 - p);
+      }
       ticking = false;
     };
     addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(onScroll); ticking = true; } }, { passive: true });
@@ -479,7 +505,10 @@ function initCollageParallax() {
   const loop = () => {
     cx += (tx - cx) * 0.05;
     cy += (ty - cy) * 0.05;
-    drifts.forEach(({ el, d }) => { el.style.transform = `translate3d(${(cx * d * 16).toFixed(2)}px, ${(cy * d * 12).toFixed(2)}px, 0)`; });
+    drifts.forEach(({ el, d }) => {
+      el.style.transform = `translate3d(${(cx * d * 16).toFixed(2)}px, ${(cy * d * 12).toFixed(2)}px, 0) ` +
+        `rotateY(${(cx * 10).toFixed(2)}deg) rotateX(${(-cy * 8).toFixed(2)}deg)`;
+    });
     raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.001 ? requestAnimationFrame(loop) : 0;
   };
   addEventListener('pointermove', (e) => {
@@ -489,6 +518,127 @@ function initCollageParallax() {
     if (!raf) raf = requestAnimationFrame(loop);
   }, { passive: true });
   new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(hero);
+}
+
+/* Luz sobre la grilla de puntos ------------------------------------------
+   Un canvas dibuja solo los puntos "encendidos" encima de la grilla CSS (alineados con ella),
+   así se dibujan unas decenas de puntos por frame y no toda la grilla.
+   - Desktop: la luz sigue al mouse; si el mouse está quieto, recorre la pantalla sola.
+   - Celular: recorre la pantalla sola y al tocar sale una onda de luz desde el dedo.
+   Se apaga cuando el hero sale de pantalla o la pestaña está oculta. */
+function initDotLight() {
+  const canvas = $('[data-light]');
+  const hero = $('.hero');
+  if (!canvas || !hero || !motionOK()) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const GRID = 22;                    // = background-size de .bg::before
+  const R = media.finePointer.matches ? 180 : 130;
+  let w = 0, h = 0;
+  const resize = () => {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    w = innerWidth;
+    h = innerHeight;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  resize();
+  addEventListener('resize', resize, { passive: true });
+
+  let lx = w * 0.5, ly = h * 0.45, tx = lx, ty = ly;
+  let lastMouse = -Infinity, intensity = 0, visible = true, raf = 0;
+  const t0 = performance.now();
+  const ripples = [];
+
+  // Punto encendido: más grande y más azul/cian cuanto más cerca de la luz
+  const dot = (x, y, f, alpha) => {
+    ctx.fillStyle = `hsla(${221 - 32 * f}, 90%, ${55 + 6 * f}%, ${(0.18 + 0.72 * f) * alpha})`;
+    ctx.beginPath();
+    ctx.arc(x, y, 1 + 1.7 * f, 0, Math.PI * 2);
+    ctx.fill();
+  };
+  // Recorre solo las celdas de la grilla dentro de un radio
+  const eachDot = (cx, cy, radius, fn) => {
+    const x0 = Math.max(0, Math.floor((cx - radius) / GRID));
+    const x1 = Math.min(Math.ceil(w / GRID), Math.ceil((cx + radius) / GRID));
+    const y0 = Math.max(0, Math.floor((cy - radius) / GRID));
+    const y1 = Math.min(Math.ceil(h / GRID), Math.ceil((cy + radius) / GRID));
+    for (let gx = x0; gx <= x1; gx++) {
+      for (let gy = y0; gy <= y1; gy++) {
+        const x = gx * GRID + GRID / 2;
+        const y = gy * GRID + GRID / 2;
+        fn(x, y, Math.hypot(x - cx, y - cy));
+      }
+    }
+  };
+
+  const draw = (now) => {
+    raf = 0;
+    if (now - lastMouse > 2500) { // piloto automático (celular o mouse quieto)
+      const s = (now - t0) / 1000;
+      tx = w * (0.5 + 0.34 * Math.sin(s * 0.33));
+      ty = h * (0.46 + 0.24 * Math.sin(s * 0.51 + 1.2));
+    }
+    lx += (tx - lx) * 0.07;
+    ly += (ty - ly) * 0.07;
+    intensity += ((visible ? 1 : 0) - intensity) * 0.08;
+
+    ctx.clearRect(0, 0, w, h);
+    if (intensity > 0.01) {
+      const g = ctx.createRadialGradient(lx, ly, 0, lx, ly, R * 1.5);
+      g.addColorStop(0, `rgba(37, 99, 235, ${0.09 * intensity})`);
+      g.addColorStop(1, 'rgba(37, 99, 235, 0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(lx - R * 1.5, ly - R * 1.5, R * 3, R * 3);
+      eachDot(lx, ly, R, (x, y, d) => { if (d < R) dot(x, y, 1 - d / R, intensity); });
+    }
+    for (let i = ripples.length - 1; i >= 0; i--) { // ondas al tocar
+      const r = ripples[i];
+      const age = (now - r.t) / 1000;
+      if (age > 1.3) { ripples.splice(i, 1); continue; }
+      const radius = 20 + age * 460;
+      const band = 46;
+      const fade = 1 - age / 1.3;
+      eachDot(r.x, r.y, radius + band, (x, y, d) => {
+        const k = 1 - Math.abs(d - radius) / band;
+        if (k > 0) dot(x, y, k, fade);
+      });
+    }
+    if (!document.hidden && (visible || intensity > 0.01 || ripples.length)) raf = requestAnimationFrame(draw);
+  };
+  const start = () => { if (!raf && !document.hidden) raf = requestAnimationFrame(draw); };
+
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    tx = e.clientX;
+    ty = e.clientY;
+    lastMouse = performance.now();
+  }, { passive: true });
+  hero.addEventListener('pointerdown', (e) => {
+    ripples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+    start();
+  }, { passive: true });
+  // Arranca cuando la página ya cargó (no compite con la carga inicial)
+  const boot = () => {
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; start(); }).observe(hero);
+    document.addEventListener('visibilitychange', start);
+    start();
+  };
+  const later = () => setTimeout(boot, 600);
+  if (document.readyState === 'complete') later();
+  else addEventListener('load', later, { once: true });
+}
+
+/* Intro: se quita del DOM al terminar (la animación es CSS; esto es solo limpieza) */
+function initIntro() {
+  const intro = $('[data-intro]');
+  if (!intro) return;
+  if (!document.documentElement.classList.contains('has-intro')) { intro.remove(); return; }
+  const done = () => intro.remove();
+  intro.addEventListener('animationend', (e) => { if (e.target === intro) done(); });
+  setTimeout(done, 3000); // red de seguridad
 }
 
 /* Botones magnéticos (desktop) */
@@ -541,8 +691,10 @@ function initCursor() {
     bubble.classList.toggle('is-visible', over);
     if (over && !raf) raf = requestAnimationFrame(loop);
   }, { passive: true });
-  document.addEventListener('pointerleave', () => bubble.classList.remove('is-visible'));
-  addEventListener('blur', () => bubble.classList.remove('is-visible'));
+  const hide = () => { active = false; bubble.classList.remove('is-visible'); };
+  document.addEventListener('pointerleave', hide);
+  addEventListener('blur', hide);
+  addEventListener('scroll', () => { if (active) hide(); }, { passive: true }); // el contenido se movió bajo el mouse
 }
 
 /* Proyectos en desktop: pin con GSAP ScrollTrigger.
@@ -707,6 +859,7 @@ function initYear() {
 }
 
 /* Init ------------------------------------------------------------------- */
+initIntro();
 renderCollage();
 const projectsCtl = initProjects(renderProjects(projects));
 initFilters(projectsCtl);
@@ -716,6 +869,7 @@ initYear();
 initProgressFallback();
 initRevealFallback();
 initCollageParallax();
+initDotLight();
 initMagnetic();
 initCursor();
 initProjectsPin(projectsCtl);
