@@ -118,7 +118,7 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
 
 | | Mobile / tablet | Desktop (puntero fino, ≥ 1024px) |
 |---|---|---|
-| Proyectos | Carrusel nativo con scroll-snap, la card centrada se destaca | Sección con pin: el scroll vertical avanza las cards y abre la activa; hover expande. Con un solo proyecto filtrado no hay pin |
+| Proyectos | Carrusel nativo con scroll-snap, la card centrada se destaca | Sección con pin: el scroll vertical avanza las cards y abre la activa; con el mouse, la card se expande y el carril se corre para mostrarla (se llega a todas). Con un solo proyecto filtrado no hay pin |
 | Filtro | Las cards salen y entran escalonadas | Igual, y el pin se recalcula según la cantidad de cards |
 | Hero | Entrada animada + parallax de scroll | + parallax con el mouse |
 | Cursor | Nativo | Nativo + una burbuja "Ver" que aparece solo sobre las cards |
