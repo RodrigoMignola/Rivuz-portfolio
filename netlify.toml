@@ -1,0 +1,18 @@
+# Sitio estático sin build: Netlify publica la raíz del repo tal cual.
+[build]
+  publish = "."
+  command = ""
+
+# Imágenes: caché de 1 día + revalidación en segundo plano
+# (si reemplazás una imagen con el mismo nombre, se actualiza sola).
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
