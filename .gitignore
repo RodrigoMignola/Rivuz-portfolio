@@ -10,3 +10,6 @@ node_modules/
 .netlify/
 lighthouse-*.html
 *.log
+
+# Archivos comprimidos de trabajo (no se publican)
+*.zip

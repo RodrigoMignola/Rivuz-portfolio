@@ -28,14 +28,16 @@ const projects = [
   { title: 'HLTV.org Redesign', type: 'behance', status: 'redesign', url: 'https://www.behance.net/gallery/199721495/HLTVorg-Redesign-UX-UI-Case-Study', image: 'assets/projects/hltv-redesign.webp', alt: 'Portada del caso de estudio del rediseño de HLTV.org con la web en una notebook', focus: '62% 50%' },
   { title: 'La Alameda', type: 'sitio', status: 'terminado', url: 'https://www.laalameda.com.ar/', image: 'assets/projects/la-alameda.webp', alt: 'Home de La Alameda: “Elegí tu lote ideal” con el plano aéreo de los lotes', focus: '50% 40%' },
   {
-    title: 'Basalto', type: 'galeria', status: 'terminado', image: 'assets/projects/basalto.webp', alt: 'TODO: describir el diseño de Basalto',
-    hero: false, // TODO: quitar cuando esté la miniatura real (así aparece en el collage del hero)
-    // TODO: reemplazar por las imágenes finales de Basalto (assets/projects/basalto/)
+    title: 'Basalto', type: 'galeria', status: 'terminado', image: 'assets/projects/basalto.webp', focus: '62% 50%',
+    alt: 'Portada del caso Basalto: sitio web oscuro con detalles naranjas en notebook y celular',
     gallery: [
-      { src: 'assets/projects/basalto/basalto-01.webp', alt: 'TODO: Basalto, imagen 1' },
-      { src: 'assets/projects/basalto/basalto-02.webp', alt: 'TODO: Basalto, imagen 2' },
-      { src: 'assets/projects/basalto/basalto-03.webp', alt: 'TODO: Basalto, imagen 3' },
-      { src: 'assets/projects/basalto/basalto-04.webp', alt: 'TODO: Basalto, imagen 4' },
+      { src: 'assets/projects/basalto/basalto-01-portada-2x.webp', alt: 'Portada del caso Basalto: el sitio en notebook y celular' },
+      { src: 'assets/projects/basalto/basalto-02-home-desktop-2x.webp', alt: 'Home de Basalto en desktop, página completa' },
+      { src: 'assets/projects/basalto/basalto-03-home-tablet-2x.webp', alt: 'Home de Basalto en tablet' },
+      { src: 'assets/projects/basalto/basalto-04-home-mobile-2x.webp', alt: 'Home de Basalto en mobile, pantallas sucesivas' },
+      { src: 'assets/projects/basalto/basalto-05-proyectos-2x.webp', alt: 'Página de proyectos de Basalto en desktop y mobile' },
+      { src: 'assets/projects/basalto/basalto-06-caso-valsuar-2x.webp', alt: 'Caso Valsuar: página de caso de estudio de Basalto' },
+      { src: 'assets/projects/basalto/basalto-07-contacto-2x.webp', alt: 'Página de contacto de Basalto' },
     ],
   },
   { title: 'Mariela Martinez Negocios Inmobiliarios', type: 'sitio', status: 'terminado', url: 'https://marielamartinezinmobiliaria.com.ar/', image: 'assets/projects/mariela-martinez.webp', alt: 'Home de Mariela Martinez Negocios Inmobiliarios: buscador de propiedades sobre una vista aérea de la ciudad', focus: '50% 50%' },
@@ -408,6 +410,11 @@ function initGallery() {
   dialog.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); }
+    // ↑ ↓ recorren la imagen actual (las capturas de página completa son altas)
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const slide = track.children[index];
+      if (slide) { e.preventDefault(); slide.scrollBy({ top: e.key === 'ArrowDown' ? 160 : -160, behavior: motionOK() ? 'smooth' : 'auto' }); }
+    }
   });
   dialog.addEventListener('close', () => opener?.focus({ preventScroll: true }));
 

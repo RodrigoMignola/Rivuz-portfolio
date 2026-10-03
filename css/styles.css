@@ -954,6 +954,8 @@ html:has(.gallery[open]) { overflow: hidden; }
 
 .gallery__track {
   display: flex;
+  /* alto fijo: cada imagen se ve a todo el ancho y, si es alta, se scrollea hacia abajo */
+  height: calc(100dvh - 32px - 132px);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
@@ -963,14 +965,19 @@ html:has(.gallery[open]) { overflow: hidden; }
 .gallery__track:focus-visible { outline-offset: -3px; }
 .gallery__slide {
   flex: 0 0 100%;
-  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding-inline: var(--spacing-12);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-align: center;
+  scrollbar-width: thin;
 }
 .gallery__slide img {
   width: 100%;
   height: auto;
-  max-height: calc(100dvh - 32px - 136px);
-  object-fit: contain;
+  margin-block: auto; /* centra las imágenes bajas sin cortar el inicio de las altas */
   border-radius: calc(var(--radius-cards) - 8px);
   background: var(--color-mist-hairline);
 }

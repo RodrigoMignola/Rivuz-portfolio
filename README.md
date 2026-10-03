@@ -20,9 +20,6 @@ DESIGN.md           Design system de referencia
 
 Buscá `TODO` en el proyecto (`grep -rn TODO index.html js css`). Falta completar:
 
-- [ ] **Basalto**: miniatura `assets/projects/basalto.webp` (y su `alt`); al reemplazarla, quitar `hero: false`.
-- [ ] **Galería de Basalto**: reemplazar `assets/projects/basalto/basalto-01…04.webp` por las
-      imágenes finales (se pueden agregar o quitar entradas en `gallery`).
 - [ ] **Open Graph**: cuando tengas la URL de Netlify, poné rutas absolutas en `og:image`
       (ej. `https://tu-sitio.netlify.app/assets/og-image.png`) y agregá `og:url`.
 
