@@ -243,7 +243,7 @@ function initProjects(cards) {
   // Acordeón: hover y foco abren la card.
   // Se usa pointermove con movimiento real: al expandirse, las cards se desplazan bajo
   // un mouse quieto y pointerenter abriría la vecina (efecto "salto").
-  // Además hay "hover-intent": la card se abre recién cuando el mouse se detiene un instante,
+  // Además hay "hover-intent" (60ms): la card se abre cuando el mouse se detiene apenas un instante,
   // así cruzar la fila con el mouse no abre y cierra cards sin parar.
   let intent = 0;
   track.addEventListener('pointermove', (e) => {
@@ -254,7 +254,7 @@ function initProjects(cards) {
     intent = setTimeout(() => {
       ctl.hovered = k;
       ctl.syncOpen();
-    }, 140);
+    }, 60);
   });
   track.addEventListener('pointerleave', () => {
     clearTimeout(intent);

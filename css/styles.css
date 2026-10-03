@@ -24,6 +24,10 @@
   --color-brand-3: #3b82f6; /* cobalt pop */
   --color-brand-4: #0ea5e9; /* celeste */
   --color-brand-5: #06b6d4; /* cian */
+  /* Luces del fondo: triada armónica (tonos a 120°) a partir del azul de marca */
+  --glow-hue-1: 221;  /* azul */
+  --glow-hue-2: 341;  /* rosa */
+  --glow-hue-3: 101;  /* verde lima */
   --gradient-brand: linear-gradient(90deg, var(--color-brand-1), var(--color-brand-2) 30%, var(--color-brand-4) 70%, var(--color-brand-5));
   --color-charcoal-outline: #353535;
   --color-graphite-body: #2c2c2c;
@@ -263,17 +267,17 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .bg__glow--1 {
   top: -32vmax;
   left: -24vmax;
-  background: radial-gradient(closest-side, rgb(37 99 235 / 0.13), transparent);
+  background: radial-gradient(closest-side, hsl(var(--glow-hue-1) 90% 58% / 0.14), transparent);
 }
 .bg__glow--2 {
   top: 18vh;
   right: -34vmax;
-  background: radial-gradient(closest-side, rgb(6 182 212 / 0.13), transparent);
+  background: radial-gradient(closest-side, hsl(var(--glow-hue-2) 85% 65% / 0.11), transparent);
 }
 .bg__glow--3 {
   bottom: -40vmax;
   left: 10vw;
-  background: radial-gradient(closest-side, rgb(14 165 233 / 0.1), transparent);
+  background: radial-gradient(closest-side, hsl(var(--glow-hue-3) 75% 52% / 0.1), transparent);
 }
 
 /* 5. BOTONES / LINKS / CHIPS ============================================= */
@@ -430,7 +434,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   min-height: 100vh;
   min-height: 100svh;
   padding: calc(var(--nav-height) + var(--nav-offset) + var(--spacing-40)) var(--gutter) var(--spacing-64);
-  overflow: clip;
+  overflow-x: clip; /* corta las cards en los bordes laterales, nunca abajo */
   text-align: center;
 }
 
@@ -506,8 +510,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .collage__item:nth-child(2) { --w: 230px; --xr: -50px; --y: 13%;  --r: 5deg; }
   .collage__item:nth-child(3) { --w: 220px; --x: 2%;    --yb: 10%;  --r: 4deg; }
   .collage__item:nth-child(4) { --w: 180px; --xr: 3%;   --yb: 8%;   --r: -4deg; }
-  .collage__item:nth-child(5) { --w: 170px; --x: 33%;   --yb: -90px; --r: -3deg; --ar: 5 / 4; }
-  .collage__item:nth-child(6) { --w: 150px; --xr: 2%;   --yb: -110px; --r: 6deg;  --ar: 4 / 5; }
+  .collage__item:nth-child(5) { --w: 170px; --x: 26%;   --yb: 3%;   --r: -3deg; --ar: 5 / 4; }
+  .collage__item:nth-child(6) { --w: 150px; --xr: 30%;  --yb: 2%;   --r: 6deg;  --ar: 5 / 4; }
 }
 
 @media (min-width: 1024px) {
@@ -515,8 +519,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .collage__item:nth-child(2) { --w: 260px; --xr: -3%; --y: 12%; }
   .collage__item:nth-child(3) { --w: 250px; --x: 7%;   --yb: 9%; }
   .collage__item:nth-child(4) { --w: 210px; --xr: 8%;  --yb: 7%; }
-  .collage__item:nth-child(5) { --w: 200px; --x: 27%; }
-  .collage__item:nth-child(6) { --w: 180px; --xr: 30%; --yb: -100px; }
+  .collage__item:nth-child(5) { --w: 200px; --x: 27%;  --yb: 3%; }
+  .collage__item:nth-child(6) { --w: 180px; --xr: 25%; --yb: 4%; }
 }
 
 /* 8. PROYECTOS ============================================================
@@ -890,10 +894,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--spacing-8) var(--spacing-16);
 }
-.site-footer .ghost-link { margin-right: calc(var(--spacing-12) * -1); }
 
 /* Galería modal ---------------------------------------------------------- */
 .gallery {
@@ -1021,7 +1024,6 @@ html:has(.gallery[open]) { overflow: hidden; }
   .btn-gradient__ring::before { animation: ring-flow 7s linear infinite; }
 
   /* Entrada del hero: palabras con máscara, luego eyebrow, CTA y collage escalonado */
-  .hero__eyebrow { animation: fade-up var(--dur-slow) var(--ease-out) 80ms both; }
   .word__in { animation: word-in var(--dur-slow) var(--ease-out) calc(160ms + var(--wi, 0) * 80ms) both; }
   .hero__cta { animation: fade-up var(--dur-slow) var(--ease-out) 560ms both; }
   .polaroid { animation: polaroid-in var(--dur-slow) var(--ease-out) calc(300ms + var(--i, 0) * 90ms) both; }

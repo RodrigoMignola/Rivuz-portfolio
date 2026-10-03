@@ -24,7 +24,6 @@ Buscá `TODO` en el proyecto (`grep -rn TODO index.html js css`). Falta completa
       (mismo nombre de archivo, así no hay que tocar el código) y completar los `alt`.
 - [ ] **Galería de Basalto**: reemplazar `assets/projects/basalto/basalto-01…04.webp` por las
       imágenes finales (se pueden agregar o quitar entradas en `gallery`).
-- [ ] **Nombre**: en el `<title>` y en el footer (`index.html`).
 - [ ] **Open Graph**: cuando tengas la URL de Netlify, poné rutas absolutas en `og:image`
       (ej. `https://tu-sitio.netlify.app/assets/og-image.png`) y agregá `og:url`.
 
@@ -125,7 +124,7 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
 | Hero | Entrada animada + parallax de scroll | + parallax con el mouse |
 | Cursor | Nativo | Nativo + una burbuja "Ver" que aparece solo sobre las cards |
 | Botones | `:active` | Magnéticos (suaves, máx. 6px) |
-| Fondo | Grilla de puntos + resplandores azules que derivan lento | Igual |
+| Fondo | Grilla de puntos + 3 luces en triada (azul, rosa, lima) que derivan lento | Igual |
 
 **Accesibilidad y fallbacks**
 
@@ -140,7 +139,8 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
 
 ## Design system
 
-- Canvas blanco con una grilla de puntos tenue y resplandores azules muy suaves; texto Portrait Ink
+- Canvas blanco con una grilla de puntos tenue y tres luces muy suaves en triada armónica
+  (azul 221°, rosa 341°, lima 101°; tokens `--glow-hue-*`); texto Portrait Ink
   `#08304c`; color en lavados pastel (mint, sky, peach) en las pastillas.
 - **Gradiente de marca azul/celeste** (`--gradient-brand`, reemplaza al arcoíris de DESIGN.md):
   solo en **un CTA por vista**, en **una palabra en cursiva por titular** y en el cuadradito de la marca/favicon.
