@@ -142,7 +142,7 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
   (azul 221°, rosa 341°, lima 101°; tokens `--glow-hue-*`); texto Portrait Ink
   `#08304c`; color en lavados pastel (mint, sky, peach) en las pastillas.
 - **Gradiente de marca azul/celeste** (`--gradient-brand`, reemplaza al arcoíris de DESIGN.md):
-  solo en **un CTA por vista**, en **una palabra en cursiva por titular** y en el cuadradito de la marca/favicon.
+  solo en **un CTA por vista** y en **una palabra en cursiva por titular**. El favicon es `assets/favicon-rivuz.png`.
 - Radios: cards 24px, botones 28px, tags 9999px. Sombras de varias capas, máximo 8% de opacidad.
 - Tipografías: Plus Jakarta Sans (sustituta de Basier Circle) para titulares de 31px o más, con
   tracking negativo, y Switzer para UI y cuerpo.
