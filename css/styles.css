@@ -529,6 +529,71 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .projects__noscript { padding-block: var(--spacing-24); }
 
+/* Filtro: grupo de pills; el fondo del activo aparece con opacity + scale */
+.projects__filters { margin-bottom: var(--spacing-8); }
+.filters {
+  display: flex;
+  gap: var(--spacing-4);
+  width: max-content;
+  max-width: 100%;
+  padding: var(--spacing-4);
+  border-radius: var(--radius-tags);
+  background: var(--surface-card);
+  box-shadow: var(--hairline);
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.filters::-webkit-scrollbar { display: none; }
+
+.filter {
+  position: relative;
+  isolation: isolate;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: var(--radius-tags);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-iron-quiet);
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.filter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--surface-tinted-wash);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.filter[aria-pressed="true"] { color: var(--color-portrait-ink); }
+.filter[aria-pressed="true"]::before { opacity: 1; transform: none; }
+@media (hover: hover) {
+  .filter:hover { color: var(--color-portrait-ink); }
+  .filter:hover:not([aria-pressed="true"])::before { opacity: 0.5; transform: scale(0.94); }
+}
+.filter:active::before { transform: scale(0.94); }
+.filter:focus-visible { outline-offset: -2px; }
+/* Pantallas chicas: más compacto y sin contadores para que entren las 4 opciones */
+@media (max-width: 419px) {
+  .filters { gap: 0; }
+  .filter { padding: 8px 10px; font-size: 13px; }
+  .filter__count { display: none; }
+}
+.filter__count {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
 /* Viewport = scroller horizontal nativo */
 .projects__viewport {
   overflow-x: auto;
@@ -646,9 +711,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-weight: var(--font-weight-semibold);
   line-height: 1.25;
   letter-spacing: -0.01em;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-wrap: balance;
 }
 
 .card__arrow {
@@ -690,11 +758,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    la imagen tiene ancho fijo y solo se recorta, así que no hay re-decode ni reflow pesado. */
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .projects {
-    --card-h: min(62vh, 540px);
+    --card-h: min(56vh, 520px);
     --card-wide: min(50vw, 640px);
     --card-narrow: 128px;
   }
-  .projects__head { margin-bottom: var(--spacing-32); }
+  .projects__head { margin-bottom: var(--spacing-20); }
   .projects__viewport { scroll-snap-type: none; padding-block: var(--spacing-16) var(--spacing-56); }
   .projects__track {
     height: calc(var(--card-h) + 0px);
@@ -785,6 +853,72 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   gap: var(--spacing-8) var(--spacing-16);
 }
 .site-footer .ghost-link { margin-right: calc(var(--spacing-12) * -1); }
+
+/* Galería modal ---------------------------------------------------------- */
+.gallery {
+  width: min(100% - var(--gutter) * 2, 1100px);
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-cards);
+  background: var(--surface-card);
+  color: var(--color-portrait-ink);
+  box-shadow: var(--shadow-subtle-3);
+  overflow: hidden;
+}
+.gallery::backdrop { background: rgb(255 255 255 / 0.86); }
+html:has(.gallery[open]) { overflow: hidden; }
+
+.gallery__head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  padding: var(--spacing-12) var(--spacing-12) var(--spacing-12) var(--spacing-20);
+}
+.gallery__title { font-size: var(--text-subheading); font-weight: var(--font-weight-semibold); letter-spacing: var(--tracking-subheading); }
+.gallery__count {
+  margin-right: auto;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-iron-quiet);
+}
+
+.gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.gallery__track::-webkit-scrollbar { display: none; }
+.gallery__track:focus-visible { outline-offset: -3px; }
+.gallery__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  padding-inline: var(--spacing-12);
+}
+.gallery__slide img {
+  width: 100%;
+  height: auto;
+  max-height: calc(100dvh - 32px - 136px);
+  object-fit: contain;
+  border-radius: calc(var(--radius-cards) - 8px);
+  background: var(--color-mist-hairline);
+}
+
+.gallery__nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-8);
+  padding: var(--spacing-8) 0 var(--spacing-12);
+}
+
+/* El cursor propio queda debajo del top layer: dentro del diálogo vuelve el nativo */
+html.has-cursor .gallery,
+html.has-cursor .gallery * { cursor: auto; }
+html.has-cursor .gallery button { cursor: pointer; }
 
 /* 10. MOTION =============================================================
    Todo anima solo transform/opacity. Con prefers-reduced-motion: reduce,

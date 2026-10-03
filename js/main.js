@@ -1,37 +1,63 @@
 /* ==========================================================================
    Portfolio RIVUZ — main.js
-   Vanilla JS. Todo lo que cambia contenido está en `projects`.
+   Vanilla JS. Todo lo que cambia contenido está en `projects` y `filters`.
    ========================================================================== */
 
 /**
  * PROYECTOS — editá este array para agregar, quitar o reordenar proyectos.
  * No hace falta tocar el HTML.
  *
- *  title     Título visible de la card.
- *  category  Texto de la pastilla (ej. "Landing page", "E-commerce").
- *  type      "imagen" | "behance" | "sitio" (solo informativo, se usa en el aria-label).
- *  url       Link que se abre en una pestaña nueva. Para type "imagen" podés apuntar
- *            a un archivo de /assets (ej. "assets/projects/mi-diseño-full.webp").
- *  image     Miniatura WebP (recomendado 1200×1000). Se muestra recortada (object-fit: cover).
- *  alt       Descripción breve de la imagen.
- *  tone      Color pastel de la pastilla: "mint" | "sky" | "peach".
- *  hero      false para no usarla en el collage del hero (se usan las primeras 6).
+ *  title    Título visible de la card.
+ *  type     "sitio" | "behance" | "galeria". Define la pastilla y qué pasa al hacer clic:
+ *           sitio/behance → abre `url` en una pestaña nueva; galeria → abre la galería.
+ *  status   "desarrollo" | "terminado" | "redesign". Lo usa el filtro (ver `filters`).
+ *  url      Link externo (sitio / behance).
+ *  gallery  Solo para type "galeria": lista de imágenes { src, alt } (WebP, 1200×1000 o similar).
+ *  image    Miniatura WebP (recomendado 1200×1000). Se recorta con object-fit: cover.
+ *  alt      Descripción breve de la miniatura.
+ *  hero     false para no usarla en el collage del hero (se usan las primeras 6).
  */
 const projects = [
-  // TODO: reemplazar título, categoría, link e imagen por los del proyecto real
-  { title: 'Proyecto 01', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-01.webp', image: 'assets/projects/proyecto-01.webp', alt: 'TODO: describir el diseño del proyecto 01', tone: 'mint' },
-  { title: 'Proyecto 02', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-02.webp', image: 'assets/projects/proyecto-02.webp', alt: 'TODO: describir el diseño del proyecto 02', tone: 'sky' },
-  { title: 'Proyecto 03', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-03.webp', image: 'assets/projects/proyecto-03.webp', alt: 'TODO: describir el diseño del proyecto 03', tone: 'peach' },
-  { title: 'Proyecto 04', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-04.webp', image: 'assets/projects/proyecto-04.webp', alt: 'TODO: describir el diseño del proyecto 04', tone: 'mint' },
-  { title: 'Proyecto 05', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-05.webp', image: 'assets/projects/proyecto-05.webp', alt: 'TODO: describir el diseño del proyecto 05', tone: 'sky' },
-  { title: 'Proyecto 06', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-06.webp', image: 'assets/projects/proyecto-06.webp', alt: 'TODO: describir el diseño del proyecto 06', tone: 'peach' },
-  { title: 'Proyecto 07', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-07.webp', image: 'assets/projects/proyecto-07.webp', alt: 'TODO: describir el diseño del proyecto 07', tone: 'mint' },
-  { title: 'Proyecto 08', category: 'TODO categoría', type: 'imagen', url: 'assets/projects/proyecto-08.webp', image: 'assets/projects/proyecto-08.webp', alt: 'TODO: describir el diseño del proyecto 08', tone: 'sky' },
+  // TODO (todos): reemplazar las miniaturas placeholder y completar el `alt`
+  { title: 'Tackr Jobs', type: 'sitio', status: 'terminado', url: 'https://tackrjobs.com/es', image: 'assets/projects/tackr-jobs.webp', alt: 'TODO: describir el diseño de Tackr Jobs' },
+  { title: 'FOODTEX', type: 'sitio', status: 'desarrollo', url: 'https://foodtex-propuesta-2.netlify.app/', image: 'assets/projects/foodtex.webp', alt: 'TODO: describir el diseño de FOODTEX' },
+  { title: 'BCM Products', type: 'sitio', status: 'desarrollo', url: 'https://bcm-products-motion.lihuensg.chatgpt.site/', image: 'assets/projects/bcm-products.webp', alt: 'TODO: describir el diseño de BCM Products' },
+  { title: 'Tackr Scout', type: 'behance', status: 'terminado', url: 'https://www.behance.net/gallery/244458863/Tackr-Scout-UX-UI-Landing-Page', image: 'assets/projects/tackr-scout.webp', alt: 'TODO: describir el diseño de Tackr Scout' },
+  { title: 'HLTV.org Redesign', type: 'behance', status: 'redesign', url: 'https://www.behance.net/gallery/199721495/HLTVorg-Redesign-UX-UI-Case-Study', image: 'assets/projects/hltv-redesign.webp', alt: 'TODO: describir el rediseño de HLTV.org' },
+  {
+    title: 'Basalto', type: 'galeria', status: 'terminado', image: 'assets/projects/basalto.webp', alt: 'TODO: describir el diseño de Basalto',
+    // TODO: reemplazar por las imágenes finales de Basalto (assets/projects/basalto/)
+    gallery: [
+      { src: 'assets/projects/basalto/basalto-01.webp', alt: 'TODO: Basalto, imagen 1' },
+      { src: 'assets/projects/basalto/basalto-02.webp', alt: 'TODO: Basalto, imagen 2' },
+      { src: 'assets/projects/basalto/basalto-03.webp', alt: 'TODO: Basalto, imagen 3' },
+      { src: 'assets/projects/basalto/basalto-04.webp', alt: 'TODO: Basalto, imagen 4' },
+    ],
+  },
+  { title: 'Mariela Martinez Negocios Inmobiliarios', type: 'sitio', status: 'terminado', url: 'https://marielamartinezinmobiliaria.com.ar/', image: 'assets/projects/mariela-martinez.webp', alt: 'TODO: describir el diseño de Mariela Martinez Negocios Inmobiliarios' },
+  { title: 'La Alameda', type: 'sitio', status: 'terminado', url: 'https://www.laalameda.com.ar/', image: 'assets/projects/la-alameda.webp', alt: 'TODO: describir el diseño de La Alameda' },
 ];
+
+/** FILTROS — `id` debe coincidir con el `status` de los proyectos ("all" = todos). */
+const filters = [
+  { id: 'all', label: 'Todos' },
+  { id: 'desarrollo', label: 'En desarrollo' },
+  { id: 'terminado', label: 'Terminados' },
+  { id: 'redesign', label: 'ReDesign' },
+];
+
+/* Pastilla según el tipo; el color pastel según el estado */
+const TYPES = {
+  sitio: { label: 'Sitio web', hint: 'abre el sitio en una pestaña nueva' },
+  behance: { label: 'Behance', hint: 'abre el caso en Behance en una pestaña nueva' },
+  galeria: { label: 'Galería', hint: 'abre una galería de imágenes' },
+};
+const STATUS_TONE = { terminado: 'mint', desarrollo: 'peach', redesign: 'sky' };
 
 /* Utilidades ------------------------------------------------------------- */
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const escapeHTML = (str = '') =>
   String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -42,11 +68,14 @@ const media = {
   // Debe coincidir con el media query del acordeón en styles.css
   desktop: matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)'),
 };
+const motionOK = () => !media.reducedMotion.matches;
 
 const pad = (n) => String(n).padStart(2, '0');
 
 const ICON_ARROW_UP_RIGHT =
   '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+const ICON_EXPAND =
+  '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h5v5M9 20H4v-5M20 4l-6 6M4 20l6-6"/></svg>';
 
 /* Hero: collage generado desde `projects` -------------------------------- */
 function renderCollage() {
@@ -90,36 +119,40 @@ function initNav() {
   header.addEventListener('focusin', () => header.classList.remove('is-hidden'));
 }
 
-/* Proyectos: render de cards ------------------------------------------- */
-function renderProjects() {
+/* Proyectos: render de cards (recibe la lista ya filtrada) --------------- */
+function renderProjects(list) {
   const track = $('[data-projects-track]');
   if (!track) return [];
-  const typeLabel = { imagen: 'imagen', behance: 'Behance', sitio: 'sitio web' };
 
-  track.innerHTML = projects
+  track.innerHTML = list
     .map((p, i) => {
-      const tone = ['mint', 'sky', 'peach'].includes(p.tone) ? p.tone : 'sky';
-      const opens = typeLabel[p.type] ? `Abre ${typeLabel[p.type]} en una pestaña nueva` : 'Se abre en una pestaña nueva';
+      const type = TYPES[p.type] || TYPES.sitio;
+      const tone = STATUS_TONE[p.status] || 'sky';
+      const isGallery = p.type === 'galeria';
+      const id = projects.indexOf(p);
+      // La galería es un link a la primera imagen (funciona sin JS); con JS abre el diálogo.
+      const href = isGallery ? p.gallery?.[0]?.src || p.image : p.url;
+      const attrs = isGallery
+        ? `data-gallery="${id}" aria-haspopup="dialog"`
+        : 'target="_blank" rel="noopener noreferrer"';
       return `
-      <li class="card" data-index="${i}">
-        <a class="card__link" href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer" data-cursor="view">
+      <li class="card" style="--ci:${i}">
+        <a class="card__link" href="${escapeHTML(href)}" ${attrs} data-cursor="view">
           <div class="card__frame">
             <img class="card__img" src="${escapeHTML(p.image)}" alt="${escapeHTML(p.alt || p.title)}" width="1200" height="1000" loading="lazy" decoding="async">
             <span class="card__index" aria-hidden="true">${pad(i + 1)}</span>
             <div class="card__body">
-              <span class="tag tag--${tone}">${escapeHTML(p.category)}</span>
+              <span class="tag tag--${tone}">${type.label}</span>
               <h3 class="card__title">${escapeHTML(p.title)}</h3>
-              <span class="card__arrow" aria-hidden="true">${ICON_ARROW_UP_RIGHT}</span>
+              <span class="card__arrow" aria-hidden="true">${isGallery ? ICON_EXPAND : ICON_ARROW_UP_RIGHT}</span>
             </div>
           </div>
-          <span class="visually-hidden">(${opens})</span>
+          <span class="visually-hidden">(${type.hint})</span>
         </a>
       </li>`;
     })
     .join('');
 
-  const total = $('[data-count-total]');
-  if (total) total.textContent = pad(projects.length);
   return $$('.card', track);
 }
 
@@ -128,34 +161,47 @@ function renderProjects() {
  * - carrusel: card activa = la más cercana al centro del viewport (scroll-snap nativo).
  * - acordeón (desktop): card abierta = hover/foco, o la activa.
  * - pin (desktop + GSAP, ver initProjectsPin): la activa la decide el progreso del scroll.
+ * Los listeners están delegados en el track, así sobreviven a los re-render del filtro.
  */
 function initProjects(cards) {
   const section = $('[data-projects]');
   const viewport = $('[data-projects-viewport]');
   const track = $('[data-projects-track]');
-  if (!section || !cards.length) return null;
+  if (!section || !track) return null;
 
   const current = $('[data-count-current]');
+  const total = $('[data-count-total]');
   const prevBtn = $('[data-prev]');
   const nextBtn = $('[data-next]');
 
   const ctl = {
+    cards,
     active: 0,
     hovered: null,
-    pinned: false, // lo activa initProjectsPin
-    goTo: null,    // lo sobreescribe el pin para navegar por scroll vertical
+    pinned: false,        // lo activa initProjectsPin
+    goTo: null,           // lo define el pin para navegar con el scroll vertical
+    onCardsChange: null,  // lo define el pin para reconstruirse al filtrar
     setActive(i) {
-      i = Math.max(0, Math.min(cards.length - 1, i));
+      const n = this.cards.length;
+      i = Math.max(0, Math.min(n - 1, i));
       this.active = i;
-      cards.forEach((c, k) => c.classList.toggle('is-active', k === i));
-      if (current) current.textContent = pad(i + 1);
-      if (prevBtn) prevBtn.disabled = i === 0;
-      if (nextBtn) nextBtn.disabled = i === cards.length - 1;
+      this.cards.forEach((c, k) => c.classList.toggle('is-active', k === i));
+      if (current) current.textContent = pad(n ? i + 1 : 0);
+      if (prevBtn) prevBtn.disabled = i <= 0;
+      if (nextBtn) nextBtn.disabled = i >= n - 1;
       this.syncOpen();
     },
     syncOpen() {
       const open = this.hovered ?? this.active;
-      cards.forEach((c, k) => c.classList.toggle('is-open', k === open));
+      this.cards.forEach((c, k) => c.classList.toggle('is-open', k === open));
+    },
+    setCards(next) {
+      this.cards = next;
+      this.hovered = null;
+      if (total) total.textContent = pad(next.length);
+      viewport.scrollLeft = 0;
+      this.setActive(0);
+      this.onCardsChange?.();
     },
   };
 
@@ -164,12 +210,13 @@ function initProjects(cards) {
   applyMode();
   media.desktop.addEventListener('change', applyMode);
 
-  // Navegación con las flechas (puntero fino)
+  // Navegación con las flechas (puntero fino) y con el foco
   const scrollToCard = (i) => {
     if (ctl.goTo) return ctl.goTo(i);
-    const card = cards[i];
+    const card = ctl.cards[i];
+    if (!card) return;
     const target = card.offsetLeft + card.offsetWidth / 2 - viewport.clientWidth / 2;
-    viewport.scrollTo({ left: target, behavior: media.reducedMotion.matches ? 'auto' : 'smooth' });
+    viewport.scrollTo({ left: target, behavior: motionOK() ? 'smooth' : 'auto' });
     ctl.setActive(i);
   };
   prevBtn?.addEventListener('click', () => scrollToCard(ctl.active - 1));
@@ -183,7 +230,7 @@ function initProjects(cards) {
     const center = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
     let best = 0;
     let bestDist = Infinity;
-    cards.forEach((c, k) => {
+    ctl.cards.forEach((c, k) => {
       const r = c.getBoundingClientRect();
       const d = Math.abs(r.left + r.width / 2 - center);
       if (d < bestDist) { bestDist = d; best = k; }
@@ -197,32 +244,149 @@ function initProjects(cards) {
   // un mouse quieto y pointerenter abriría la vecina (efecto "salto").
   track.addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse' || !isAccordion() || (!e.movementX && !e.movementY)) return;
-    const card = e.target.closest('.card');
-    const k = card ? cards.indexOf(card) : -1;
+    const k = ctl.cards.indexOf(e.target.closest('.card'));
     if (k > -1 && k !== ctl.hovered) {
       ctl.hovered = k;
       ctl.syncOpen();
     }
   });
-  cards.forEach((c, k) => {
-    c.addEventListener('focusin', () => {
-      ctl.hovered = null;
-      if (k !== ctl.active) scrollToCard(k); // centra la card enfocada (carrusel) o mueve el pin
-      else ctl.syncOpen();
-    });
-  });
   track.addEventListener('pointerleave', () => { ctl.hovered = null; ctl.syncOpen(); });
+  track.addEventListener('focusin', (e) => {
+    const k = ctl.cards.indexOf(e.target.closest('.card'));
+    if (k < 0) return;
+    ctl.hovered = null;
+    if (k !== ctl.active) scrollToCard(k); // centra la card enfocada (carrusel) o mueve el pin
+    else ctl.syncOpen();
+  });
 
-  ctl.setActive(0);
+  ctl.setCards(cards);
   requestAnimationFrame(detectCentered);
   return ctl;
+}
+
+/* Filtro de proyectos: reorganiza las cards con una transición breve ---- */
+function initFilters(ctl) {
+  const root = $('[data-filters]');
+  const track = $('[data-projects-track]');
+  const status = $('[data-filter-status]');
+  if (!root || !ctl) return;
+
+  const countFor = (id) => (id === 'all' ? projects.length : projects.filter((p) => p.status === id).length);
+  const available = filters.filter((f) => f.id === 'all' || countFor(f.id) > 0);
+  root.innerHTML = available
+    .map((f) => `
+      <button class="filter" type="button" data-filter="${f.id}" aria-pressed="${f.id === 'all'}">
+        <span>${escapeHTML(f.label)}</span><span class="filter__count" aria-hidden="true">${countFor(f.id)}</span>
+      </button>`)
+    .join('');
+  const buttons = $$('.filter', root);
+
+  let currentFilter = 'all';
+  let busy = false;
+
+  root.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.filter');
+    if (!btn || btn.dataset.filter === currentFilter || busy) return;
+    busy = true;
+    currentFilter = btn.dataset.filter;
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    // mantener visible el botón elegido en mobile (el grupo scrollea en horizontal)
+    btn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: motionOK() ? 'smooth' : 'auto' });
+
+    const list = currentFilter === 'all' ? projects : projects.filter((p) => p.status === currentFilter);
+    const animate = motionOK();
+
+    if (animate) {
+      track.classList.add('is-leaving');
+      await wait(220);
+    }
+    ctl.setCards(renderProjects(list));
+    track.classList.remove('is-leaving');
+    if (animate) {
+      track.classList.add('is-entering');
+      setTimeout(() => track.classList.remove('is-entering'), 700 + list.length * 70);
+    }
+    if (status) status.textContent = `${list.length} ${list.length === 1 ? 'proyecto' : 'proyectos'}: ${btn.textContent.replace(/\d+/g, '').trim()}`;
+    busy = false;
+  });
+}
+
+/* Galería (proyectos type "galeria"): diálogo modal con carrusel nativo -- */
+function initGallery() {
+  const dialog = $('[data-gallery-dialog]');
+  const track = $('[data-gallery-track]');
+  if (!dialog || !track || typeof dialog.showModal !== 'function') return; // sin soporte: el link abre la imagen
+  const title = $('[data-gallery-title]', dialog);
+  const count = $('[data-gallery-count]', dialog);
+  const prev = $('[data-gallery-prev]', dialog);
+  const next = $('[data-gallery-next]', dialog);
+  let index = 0;
+  let total = 0;
+  let opener = null;
+
+  const update = () => {
+    index = Math.round(track.scrollLeft / track.clientWidth) || 0;
+    count.textContent = `${index + 1} / ${total}`;
+    prev.disabled = index <= 0;
+    next.disabled = index >= total - 1;
+  };
+  const go = (i) => {
+    track.scrollTo({ left: i * track.clientWidth, behavior: motionOK() ? 'smooth' : 'auto' });
+  };
+  let raf = 0;
+  track.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; update(); }); }, { passive: true });
+  prev.addEventListener('click', () => go(index - 1));
+  next.addEventListener('click', () => go(index + 1));
+
+  const close = async () => {
+    if (!dialog.open) return;
+    if (motionOK()) {
+      dialog.classList.add('is-closing');
+      await wait(250);
+      dialog.classList.remove('is-closing');
+    }
+    dialog.close();
+  };
+  $('[data-gallery-close]', dialog).addEventListener('click', close);
+  dialog.addEventListener('cancel', (e) => { e.preventDefault(); close(); }); // Esc con animación
+  dialog.addEventListener('click', (e) => {
+    if (e.target !== dialog) return; // clic en el fondo (fuera del panel)
+    const r = dialog.getBoundingClientRect();
+    const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    if (outside) close();
+  });
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); }
+  });
+  dialog.addEventListener('close', () => opener?.focus({ preventScroll: true }));
+
+  // Abrir: clic delegado en las cards con data-gallery
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-gallery]');
+    if (!link || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const project = projects[+link.dataset.gallery];
+    if (!project?.gallery?.length) return;
+    e.preventDefault();
+    opener = link;
+    total = project.gallery.length;
+    title.textContent = project.title;
+    track.innerHTML = project.gallery
+      .map((img, i) => `
+        <li class="gallery__slide">
+          <img src="${escapeHTML(img.src)}" alt="${escapeHTML(img.alt || `${project.title}, imagen ${i + 1}`)}" width="1200" height="1000" ${i ? 'loading="lazy"' : ''} decoding="async">
+        </li>`)
+      .join('');
+    dialog.showModal();
+    track.scrollLeft = 0;
+    update();
+  });
 }
 
 /* ==========================================================================
    MOTION
    Regla: si el usuario pide reduced-motion, nada de esto se inicializa.
    ========================================================================== */
-const motionOK = () => !media.reducedMotion.matches;
 const supportsScrollTimeline = CSS.supports?.('animation-timeline: scroll()');
 const supportsViewTimeline = CSS.supports?.('animation-timeline: view()');
 
@@ -374,9 +538,6 @@ function initProjectsPin(ctl) {
   const pinEl = $('[data-projects-pin]');
   const viewport = $('[data-projects-viewport]');
   const track = $('[data-projects-track]');
-  const cards = $$('.card', track);
-  const n = cards.length;
-  if (n < 2) return;
 
   const setup = () => {
     const { gsap, ScrollTrigger } = window;
@@ -384,10 +545,6 @@ function initProjectsPin(ctl) {
     const mm = gsap.matchMedia();
 
     mm.add(PIN_QUERY, () => {
-      section.classList.add('is-pinned');
-      viewport.scrollLeft = 0;
-      ctl.pinned = true;
-
       // Medidas reales (CSS vars resueltas) para calcular dónde queda cada card
       const probe = document.createElement('div');
       probe.style.cssText = 'position:absolute;visibility:hidden;height:0;width:var(--card-wide)';
@@ -401,42 +558,68 @@ function initProjectsPin(ctl) {
         padR = parseFloat(cs.paddingRight) || 0;
         narrow = parseFloat(getComputedStyle(section).getPropertyValue('--card-narrow')) || 128;
       };
+      const count = () => ctl.cards.length;
       const xFor = (i) => {
+        const n = count();
         const vw = viewport.clientWidth;
-        const total = padL + padR + wide + (n - 1) * (narrow + gap);
+        const totalW = padL + padR + wide + (n - 1) * (narrow + gap);
         const center = padL + i * (narrow + gap) + wide / 2;
-        return Math.max(Math.min(vw / 2 - center, 0), Math.min(vw - total, 0));
+        return Math.max(Math.min(vw / 2 - center, 0), Math.min(vw - totalW, 0));
       };
       const moveTo = (i, instant) =>
         gsap.to(track, { x: xFor(i), duration: instant ? 0 : 0.7, ease: 'expo.out', overwrite: true });
 
-      measure();
-      const st = ScrollTrigger.create({
-        trigger: pinEl,
-        pin: true,
-        start: 'top top',
-        end: () => '+=' + Math.round((n - 1) * innerHeight * 0.55),
-        invalidateOnRefresh: true,
-        snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, delay: 0.08, ease: 'power2.out' },
-        onRefresh: () => { measure(); moveTo(ctl.active, true); },
-        onUpdate: (self) => {
-          const i = Math.round(self.progress * (n - 1));
-          if (i !== ctl.active) { ctl.setActive(i); moveTo(i); }
-        },
-      });
-
-      // Flechas y foco con teclado: navegan moviendo el scroll vertical
-      ctl.goTo = (i) => {
-        i = Math.max(0, Math.min(n - 1, i));
-        const y = st.start + (st.end - st.start) * (i / (n - 1));
-        scrollTo({ top: y, behavior: 'smooth' });
+      let st = null;
+      // (Re)construye el pin según la cantidad de cards visibles (cambia con el filtro)
+      const build = () => {
+        st?.kill();
+        st = null;
+        ctl.goTo = null;
+        gsap.set(track, { x: 0 });
+        const n = count();
+        const pinnable = n > 1;
+        section.classList.toggle('is-pinned', pinnable);
+        ctl.pinned = pinnable;
+        if (!pinnable) return;
+        viewport.scrollLeft = 0;
+        measure();
+        st = ScrollTrigger.create({
+          trigger: pinEl,
+          pin: true,
+          start: 'top top',
+          end: () => '+=' + Math.round((count() - 1) * innerHeight * 0.55),
+          invalidateOnRefresh: true,
+          snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, delay: 0.08, ease: 'power2.out' },
+          onRefresh: () => { measure(); moveTo(ctl.active, true); },
+          onUpdate: (self) => {
+            const i = Math.round(self.progress * (count() - 1));
+            if (i !== ctl.active) { ctl.setActive(i); moveTo(i); }
+          },
+        });
+        // Flechas y foco con teclado: navegan moviendo el scroll vertical
+        ctl.goTo = (i) => {
+          i = Math.max(0, Math.min(count() - 1, i));
+          const y = st.start + (st.end - st.start) * (i / (count() - 1));
+          scrollTo({ top: y, behavior: 'smooth' });
+        };
+        moveTo(ctl.active, true);
       };
-      moveTo(ctl.active, true);
+
+      build();
+      // Al filtrar: reconstruir y volver al inicio de la sección (sin saltos raros)
+      ctl.onCardsChange = () => {
+        build();
+        ScrollTrigger.refresh();
+        const top = st ? st.start : pinEl.getBoundingClientRect().top + scrollY;
+        scrollTo({ top, behavior: 'instant' });
+      };
 
       return () => {
+        st?.kill();
         section.classList.remove('is-pinned');
         ctl.pinned = false;
         ctl.goTo = null;
+        ctl.onCardsChange = null;
         probe.remove();
         gsap.set(track, { clearProps: 'transform' });
       };
@@ -463,8 +646,9 @@ function initYear() {
 
 /* Init ------------------------------------------------------------------- */
 renderCollage();
-const projectCards = renderProjects();
-const projectsCtl = initProjects(projectCards);
+const projectsCtl = initProjects(renderProjects(projects));
+initFilters(projectsCtl);
+initGallery();
 initNav();
 initYear();
 initProgressFallback();

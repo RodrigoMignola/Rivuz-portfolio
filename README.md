@@ -20,8 +20,10 @@ DESIGN.md           Design system de referencia
 
 Buscá `TODO` en el proyecto (`grep -rn TODO index.html js css`). Falta completar:
 
-- [ ] **Proyectos**: título, categoría, link, imagen y alt de cada uno (`js/main.js`).
-- [ ] **Imágenes**: reemplazar los placeholders `assets/projects/proyecto-0X.webp`.
+- [ ] **Miniaturas** de los 8 proyectos: reemplazar los placeholders de `assets/projects/*.webp`
+      (mismo nombre de archivo, así no hay que tocar el código) y completar los `alt`.
+- [ ] **Galería de Basalto**: reemplazar `assets/projects/basalto/basalto-01…04.webp` por las
+      imágenes finales (se pueden agregar o quitar entradas en `gallery`).
 - [ ] **Contacto**: email, LinkedIn, Behance y WhatsApp (`index.html`, sección `#contacto`).
 - [ ] **Nombre**: en el `<title>` y en el footer (`index.html`).
 - [ ] **Open Graph**: cuando tengas la URL de Netlify, poné rutas absolutas en `og:image`
@@ -29,33 +31,64 @@ Buscá `TODO` en el proyecto (`grep -rn TODO index.html js css`). Falta completa
 
 ## Cómo editar los proyectos
 
-Todo vive en el array `projects`, al principio de `js/main.js`. Las cards del carrusel y el
-collage del hero se generan solas, así que no hace falta tocar el HTML.
+Todo vive en el array `projects`, al principio de `js/main.js`. Las cards, el filtro y el collage
+del hero se generan solos, así que no hace falta tocar el HTML.
 
 ```js
 {
-  title: 'Landing para Marca X',          // título visible
-  category: 'Landing page',               // texto de la pastilla
-  type: 'sitio',                          // 'imagen' | 'behance' | 'sitio'
-  url: 'https://marcax.com',              // se abre en una pestaña nueva
-  image: 'assets/projects/marca-x.webp',  // miniatura WebP
-  alt: 'Home de Marca X con hero ilustrado y grilla de productos',
-  tone: 'mint',                           // color de la pastilla: 'mint' | 'sky' | 'peach'
-  // hero: false,                         // opcional: no usarla en el collage del hero
+  title: 'La Alameda',                     // título visible
+  type: 'sitio',                           // 'sitio' | 'behance' | 'galeria'
+  status: 'terminado',                     // 'desarrollo' | 'terminado' | 'redesign' (filtro)
+  url: 'https://www.laalameda.com.ar/',    // sitio / behance: se abre en una pestaña nueva
+  image: 'assets/projects/la-alameda.webp',// miniatura WebP
+  alt: 'Home de La Alameda con …',
+  // hero: false,                          // opcional: no usarla en el collage del hero
 },
 ```
 
-- **Agregar**: copiá un objeto y cambiá los datos. Se recomiendan entre 6 y 8 proyectos.
-- **Reordenar**: mové los objetos dentro del array. El orden es el de las cards.
-- **Collage del hero**: usa las primeras 6 imágenes con `hero` distinto de `false`
-  (en mobile se ven 4).
-- **Proyecto tipo imagen**: si el diseño es una imagen suelta, subí la versión grande a
-  `assets/` y usá esa ruta en `url`.
+| `type` | Pastilla | Al hacer clic |
+|---|---|---|
+| `sitio` | Sitio web | Abre `url` en una pestaña nueva |
+| `behance` | Behance | Abre el caso en Behance en una pestaña nueva |
+| `galeria` | Galería | Abre una galería modal con las imágenes de `gallery` (para proyectos no públicos, ej. Basalto) |
+
+El color de la pastilla depende del estado: mint = terminado, peach = en desarrollo, sky = redesign.
+
+Proyecto tipo galería:
+
+```js
+{
+  title: 'Basalto', type: 'galeria', status: 'terminado',
+  image: 'assets/projects/basalto.webp', alt: '…',
+  gallery: [
+    { src: 'assets/projects/basalto/basalto-01.webp', alt: 'Home de Basalto' },
+    { src: 'assets/projects/basalto/basalto-02.webp', alt: 'Ficha de producto' },
+  ],
+},
+```
+
+La galería se navega con swipe, con las flechas en pantalla o con el teclado (← →), y se cierra
+con Esc, con la X o haciendo clic afuera.
+
+### Filtro
+
+Los botones salen del array `filters` en `js/main.js`. Cada `id` filtra por el `status` de los
+proyectos (`all` muestra todos). Los contadores se calculan solos, y si un filtro queda sin proyectos
+no se muestra.
+
+```js
+const filters = [
+  { id: 'all', label: 'Todos' },
+  { id: 'desarrollo', label: 'En desarrollo' },
+  { id: 'terminado', label: 'Terminados' },
+  { id: 'redesign', label: 'ReDesign' },
+];
+```
 
 ### Imágenes
 
 - Formato **WebP**, idealmente **1200 × 1000 px** (las cards recortan con `object-fit: cover`,
-  conviene que lo importante quede centrado).
+  conviene que lo importante quede centrado). En la galería se muestran completas.
 - Peso recomendado: menos de 150 KB cada una.
 - Para convertir: [squoosh.app](https://squoosh.app) o, por terminal,
   `cwebp -q 80 original.png -o assets/projects/nombre.webp`.
@@ -88,7 +121,8 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
 
 | | Mobile / tablet | Desktop (puntero fino, ≥ 1024px) |
 |---|---|---|
-| Proyectos | Carrusel nativo con scroll-snap, la card centrada se destaca | Sección con pin: el scroll vertical avanza las cards y abre la activa; hover expande |
+| Proyectos | Carrusel nativo con scroll-snap, la card centrada se destaca | Sección con pin: el scroll vertical avanza las cards y abre la activa; hover expande. Con un solo proyecto filtrado no hay pin |
+| Filtro | Las cards salen y entran escalonadas | Igual, y el pin se recalcula según la cantidad de cards |
 | Hero | Entrada animada + parallax de scroll | + parallax con el mouse |
 | Cursor | Nativo | Punto propio que se convierte en una burbuja "Ver" sobre las cards |
 | Botones | `:active` | Magnéticos |
