@@ -207,8 +207,8 @@ function initProjects(cards) {
   cards.forEach((c, k) => {
     c.addEventListener('focusin', () => {
       ctl.hovered = null;
-      if (ctl.pinned && ctl.goTo) ctl.goTo(k);
-      else ctl.setActive(k);
+      if (k !== ctl.active) scrollToCard(k); // centra la card enfocada (carrusel) o mueve el pin
+      else ctl.syncOpen();
     });
   });
   track.addEventListener('pointerleave', () => { ctl.hovered = null; ctl.syncOpen(); });
@@ -455,11 +455,18 @@ function initProjectsPin(ctl) {
   else mq.addEventListener('change', maybeLoad, { once: true });
 }
 
+/* Footer: año actual */
+function initYear() {
+  const el = $('[data-year]');
+  if (el) el.textContent = new Date().getFullYear();
+}
+
 /* Init ------------------------------------------------------------------- */
 renderCollage();
 const projectCards = renderProjects();
 const projectsCtl = initProjects(projectCards);
 initNav();
+initYear();
 initProgressFallback();
 initRevealFallback();
 initCollageParallax();

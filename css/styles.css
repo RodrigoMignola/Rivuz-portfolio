@@ -6,7 +6,8 @@
    2. Reset + base         6. Nav
    3. Tipografía           7. Hero + collage
    4. Utilidades           8. Proyectos (carrusel / acordeón)
-                           9. Motion: progreso, cursor, entradas, parallax, revelado
+                           9. Contacto + footer
+                           10. Motion: progreso, cursor, entradas, parallax, revelado
    ========================================================================== */
 
 /* 1. DESIGN TOKENS ======================================================== */
@@ -735,7 +736,57 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .projects.is-pinned .projects__viewport { overflow-x: clip; overflow-y: visible; }
 .projects.is-pinned .projects__track { will-change: transform; }
 
-/* 9. MOTION ==============================================================
+/* 9. CONTACTO + FOOTER =================================================== */
+.contact {
+  padding-block: var(--section-gap);
+}
+@media (min-width: 768px) {
+  .contact { padding-top: var(--spacing-128); }
+}
+.contact__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-24);
+  text-align: center;
+}
+.contact__title { text-wrap: balance; }
+.contact__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-12) var(--spacing-4);
+  margin-top: var(--spacing-8);
+}
+.contact__links li:first-child { flex-basis: 100%; display: flex; justify-content: center; }
+@media (min-width: 768px) {
+  .contact__links li:first-child { flex-basis: auto; margin-right: var(--spacing-12); }
+}
+.ghost-link--arrow { gap: var(--spacing-4); padding-inline: 10px; font-size: 15px; }
+@media (min-width: 768px) {
+  .ghost-link--arrow { padding-inline: var(--spacing-16); font-size: var(--text-body); }
+}
+.ghost-link--arrow .icon { width: 16px; height: 16px; transition: transform var(--dur-fast) var(--ease-out); }
+@media (hover: hover) {
+  .ghost-link--arrow:hover .icon { transform: translate(2px, -2px); }
+}
+
+.site-footer {
+  padding-block: var(--spacing-24) var(--spacing-32);
+  font-size: 14px;
+  color: var(--color-iron-quiet);
+}
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8) var(--spacing-16);
+}
+.site-footer .ghost-link { margin-right: calc(var(--spacing-12) * -1); }
+
+/* 10. MOTION =============================================================
    Todo anima solo transform/opacity. Con prefers-reduced-motion: reduce,
    no corre nada y todo queda visible en su estado final. */
 
