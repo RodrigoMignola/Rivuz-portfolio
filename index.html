@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- TODO: agregar tu nombre en title / og:title / footer -->
+  <title>Portfolio Web Designer · Diseños creados en RIVUZ</title>
+  <meta name="description" content="Portfolio de diseño web: una selección de proyectos creados en RIVUZ.">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Open Graph / redes. TODO: cuando tengas la URL de Netlify, poné rutas absolutas en og:url y og:image -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:title" content="Diseños creados en RIVUZ · Portfolio Web Designer">
+  <meta property="og:description" content="Una selección de proyectos de diseño web creados en RIVUZ.">
+  <meta property="og:image" content="assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Diseños creados en RIVUZ">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicon: cuadradito arcoíris del design system -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <!-- Fuentes: Plus Jakarta Sans (display, sustituta de Basier Circle) + Switzer (UI/cuerpo).
+       Se cargan sin bloquear el render; el font stack tiene fallbacks reales. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;1,600&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;1,600&display=swap">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap">
+  </noscript>
+
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#proyectos">Saltar a los proyectos</a>
+
+  <!-- Nav: pill flotante. Se oculta al bajar y reaparece al subir (main.js) -->
+  <header class="site-header" data-header>
+    <nav class="nav" aria-label="Principal">
+      <a class="nav__brand" href="#top" aria-label="RIVUZ, volver al inicio">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>RIVUZ</span>
+      </a>
+      <ul class="nav__links" role="list">
+        <li><a class="ghost-link" href="#proyectos" data-magnetic>Proyectos</a></li>
+        <li><a class="ghost-link" href="#contacto" data-magnetic>Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <!-- Collage decorativo: se genera desde el array `projects` (main.js) -->
+      <div class="hero__collage" aria-hidden="true" data-collage></div>
+
+      <div class="hero__content">
+        <p class="eyebrow eyebrow--sky hero__eyebrow">Portfolio</p>
+        <h1 class="hero__title" id="hero-title">
+          <span class="hero__line"><span class="word"><span class="word__in">Diseños</span></span> <span class="word"><span class="word__in">creados</span></span></span>
+          <span class="hero__line"><span class="word"><span class="word__in">en</span></span> <span class="word word--italic"><em class="word__in rainbow-text">RIVUZ</em></span></span>
+        </h1>
+        <a class="btn-rainbow hero__cta" href="#proyectos" data-magnetic>
+          <span class="btn-rainbow__ring" aria-hidden="true"></span>
+          <span>Ver proyectos</span>
+          <svg class="icon btn-rainbow__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- PROYECTOS -->
+    <section class="projects" id="proyectos" aria-labelledby="projects-title">
+      <h2 id="projects-title">Proyectos</h2>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="contact" id="contacto" aria-labelledby="contact-title">
+      <h2 id="contact-title">Contacto</h2>
+    </section>
+  </main>
+</body>
+</html>

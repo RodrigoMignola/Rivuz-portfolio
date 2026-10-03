@@ -1,0 +1,474 @@
+/* ==========================================================================
+   Portfolio RIVUZ — styles.css
+   Design system: Portrait (ver DESIGN.md). Mobile-first.
+   Índice:
+   1. Design tokens        5. Botones / links / chips
+   2. Reset + base         6. Nav
+   3. Tipografía           7. Hero + collage
+   4. Utilidades
+   ========================================================================== */
+
+/* 1. DESIGN TOKENS ======================================================== */
+:root {
+  /* Colores */
+  --color-portrait-ink: #08304c;
+  --color-nautical-teal: #084e72;
+  --gradient-rainbow-spectrum: linear-gradient(90deg, rgb(38, 192, 255), rgb(230, 0, 194) 20%, rgb(255, 73, 78) 40%, rgb(255, 161, 62) 60%, rgb(255, 200, 55) 80%, rgb(0, 204, 61));
+  --color-rb-1: rgb(38, 192, 255);
+  --color-rb-2: rgb(230, 0, 194);
+  --color-rb-3: rgb(255, 73, 78);
+  --color-rb-4: rgb(255, 161, 62);
+  --color-rb-5: rgb(255, 200, 55);
+  --color-rb-6: rgb(0, 204, 61);
+  --color-charcoal-outline: #353535;
+  --color-graphite-body: #2c2c2c;
+  --color-slate-helper: #797979;
+  --color-iron-quiet: #585858;
+  --color-ash-divider: #dedede;
+  --color-fog-edge: #c7c7c7;
+  --color-mist-hairline: #eeeeee;
+  --color-white-canvas: #ffffff;
+  --color-mint-wash: #d7ffe2;
+  --color-sky-wash: #e8f1ff;
+  --color-peach-wash: #ffebd6;
+
+  /* Superficies */
+  --surface-canvas: var(--color-white-canvas);
+  --surface-card: var(--color-white-canvas);
+  --surface-sticky-nav: var(--color-white-canvas);
+  --surface-tinted-wash: var(--color-sky-wash);
+
+  /* Familias: Plus Jakarta Sans sustituye a Basier Circle (display ≥ 31px);
+     Switzer para UI y cuerpo. Fallbacks geométricos reales. */
+  --font-display: "Plus Jakarta Sans", "Basier Circle", "General Sans", "Satoshi", "Avenir Next", "Avenir", "Segoe UI", system-ui, sans-serif;
+  --font-ui: "Switzer", "Inter", "Manrope", "General Sans", "Helvetica Neue", "Segoe UI", Roboto, Arial, system-ui, sans-serif;
+
+  /* Escala tipográfica (DESIGN.md) */
+  --text-caption: 10px;   --leading-caption: 1.5;     --tracking-caption: 1.4px;
+  --text-body: 16px;      --leading-body: 1.5;        --tracking-body: 0px;
+  --text-body-lg: 18px;   --leading-body-lg: 1.45;    --tracking-body-lg: 0px;
+  --text-subheading: 20px; --leading-subheading: 1.43; --tracking-subheading: -0.26px;
+  --text-heading-sm: 31px; --leading-heading-sm: 1.1;  --tracking-heading-sm: -0.4px;
+  --text-heading: 44px;   --leading-heading: 1.08;    --tracking-heading: -1.15px;
+  --text-heading-lg: 49px; --leading-heading-lg: 1.04; --tracking-heading-lg: -1.96px;
+  --text-display: 76px;   --leading-display: 1;       --tracking-display: -4.25px;
+  /* Tracking relativo (em) para tamaños fluidos: -0.056em @76px … -0.013em @16px */
+  --tracking-display-em: -0.056em;
+  --tracking-heading-lg-em: -0.04em;
+  --tracking-heading-em: -0.026em;
+  --tracking-heading-sm-em: -0.013em;
+  --tracking-eyebrow: 0.14em;
+  /* Plus Jakarta tiene espacios más cortos que Basier: compensamos con word-spacing */
+  --display-word-spacing: 0.08em;
+
+  /* Pesos */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-w540: 540;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Espaciado (base 4px) */
+  --spacing-4: 4px;   --spacing-8: 8px;   --spacing-12: 12px; --spacing-16: 16px;
+  --spacing-20: 20px; --spacing-24: 24px; --spacing-28: 28px; --spacing-32: 32px;
+  --spacing-40: 40px; --spacing-48: 48px; --spacing-56: 56px; --spacing-64: 64px;
+  --spacing-80: 80px; --spacing-128: 128px; --spacing-144: 144px; --spacing-160: 160px;
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --section-gap: 80px;
+  --card-padding: 16px;
+  --element-gap: 16px;
+  --gutter: 16px;
+  --nav-height: 56px;
+  --nav-offset: 12px;
+
+  /* Radios */
+  --radius-nav: 28px;
+  --radius-tags: 9999px;
+  --radius-cards: 24px;
+  --radius-images: 24px;
+  --radius-inputs: 16px;
+  --radius-buttons: 28px;
+
+  /* Sombras (máx. 8% de opacidad por capa) */
+  --hairline: 0 0 0 1px oklab(0 0 0 / 0.08);
+  --shadow-md: rgba(0, 0, 0, 0.03) 0px 16px 16px -8px, rgba(0, 0, 0, 0.03) 0px 10px 10px -5px, rgba(0, 0, 0, 0.03) 0px 5px 5px -2.5px, rgba(0, 0, 0, 0.03) 0px 3px 3px -1.5px, rgba(0, 0, 0, 0.03) 0px 2px 2px -1px, rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px;
+  --shadow-subtle: oklab(0 0 0 / 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.03) 0px 16px 16px -8px, rgba(0, 0, 0, 0.03) 0px 10px 10px -5px, rgba(0, 0, 0, 0.03) 0px 5px 5px -2.5px, rgba(0, 0, 0, 0.03) 0px 3px 3px -1.5px, rgba(0, 0, 0, 0.03) 0px 2px 2px -1px, rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px;
+  --shadow-subtle-2: oklab(0 0 0 / 0.04) 0px 0px 0px 1px, rgba(0, 0, 0, 0.03) 0px 16px 16px -8px, rgba(0, 0, 0, 0.03) 0px 10px 10px -5px, rgba(0, 0, 0, 0.03) 0px 5px 5px -2.5px, rgba(0, 0, 0, 0.03) 0px 3px 3px -1.5px, rgba(0, 0, 0, 0.03) 0px 2px 2px -1px, rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px;
+  --shadow-subtle-3: oklab(0 0 0 / 0.06) 0px 0px 0px 1px, rgba(0, 0, 0, 0.07) 0px 20px 20px -10px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px, rgba(0, 0, 0, 0.03) 0px 5px 5px -2.5px, rgba(0, 0, 0, 0.03) 0px 3px 3px -1.5px, rgba(0, 0, 0, 0.03) 0px 2px 2px -1px, rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px;
+  --shadow-subtle-4: oklab(0 0 0 / 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 10px 16px 14px 0px;
+  --shadow-subtle-5: oklab(0 0 0 / 0.1) 0px 0px 0px 1px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 300ms;
+  --dur-base: 500ms;
+  --dur-slow: 700ms;
+
+  /* Z-index */
+  --z-collage: 0;
+  --z-content: 1;
+  --z-header: 50;
+  --z-progress: 60;
+  --z-cursor: 100;
+}
+
+@media (min-width: 768px) {
+  :root { --gutter: 32px; --nav-offset: 16px; }
+}
+
+/* 2. RESET + BASE ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--nav-height) + var(--nav-offset) * 2);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--surface-canvas);
+  color: var(--color-portrait-ink);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-feature-settings: "liga" 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip; /* el collage se corta en los bordes sin generar scroll horizontal */
+}
+
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+a { color: inherit; text-decoration: none; }
+ul[role="list"] { list-style: none; padding: 0; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+:focus-visible {
+  outline: 2px solid var(--color-portrait-ink);
+  outline-offset: 3px;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+/* 3. TIPOGRAFÍA =========================================================== */
+.display,
+.hero__title {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(2.5rem, 0.9rem + 7.2vw, var(--text-display));
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display-em);
+  word-spacing: var(--display-word-spacing);
+  text-wrap: balance;
+}
+
+.heading-lg {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(var(--text-heading-sm), 1.2rem + 4vw, var(--text-heading-lg));
+  line-height: var(--leading-heading-lg);
+  letter-spacing: var(--tracking-heading-lg-em);
+  word-spacing: var(--display-word-spacing);
+}
+
+/* Única palabra cursiva con relleno arcoíris por titular */
+.rainbow-text {
+  font-style: italic;
+  background: var(--gradient-rainbow-spectrum);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-right: 0.08em; /* evita que la cursiva se recorte */
+}
+@media (forced-colors: active) {
+  .rainbow-text { background: none; color: CanvasText; }
+}
+
+/* 4. UTILIDADES =========================================================== */
+.container {
+  width: 100%;
+  max-width: calc(var(--page-max-width) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--spacing-8);
+  left: var(--spacing-8);
+  z-index: calc(var(--z-cursor) + 1);
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--radius-buttons);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-subtle);
+  font-weight: var(--font-weight-medium);
+  transform: translateY(-200%);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.skip-link:focus-visible { transform: none; }
+
+/* 5. BOTONES / LINKS / CHIPS ============================================= */
+
+/* Eyebrow / tag: pill pastel, Switzer 600 en mayúsculas con tracking 0.14em */
+.eyebrow,
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  border-radius: var(--radius-tags);
+  font-family: var(--font-ui);
+  font-weight: var(--font-weight-semibold);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-portrait-ink);
+  padding: 3px 8px;
+  background: var(--color-sky-wash);
+}
+.eyebrow { font-size: 12px; padding: 6px 14px; }
+.eyebrow--sky, .tag--sky { background: var(--color-sky-wash); }
+.eyebrow--mint, .tag--mint { background: var(--color-mint-wash); }
+.eyebrow--peach, .tag--peach { background: var(--color-peach-wash); }
+
+/* Ghost text button: sin fondo ni borde (secundario) */
+.ghost-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-height: 44px;
+  padding: var(--spacing-8) var(--spacing-12);
+  border-radius: var(--radius-buttons);
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  color: var(--color-portrait-ink);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .ghost-link:hover { background: var(--surface-tinted-wash); }
+}
+
+/* CTA primario: pill transparente con contorno arcoíris de 1.5px.
+   El aro es una máscara; adentro una tira de gradiente se desplaza con transform. */
+.btn-rainbow {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  min-height: 48px;
+  padding: 12px 22px;
+  border-radius: var(--radius-buttons);
+  background: transparent;
+  color: var(--color-portrait-ink);
+  font-family: var(--font-ui);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-body);
+  line-height: 1;
+  white-space: nowrap;
+}
+.btn-rainbow__ring {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1.5px;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.btn-rainbow__ring::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 400%;
+  /* espectro de ida y vuelta: en reposo se ve exactamente el gradiente del sistema */
+  background: repeating-linear-gradient(90deg,
+    var(--color-rb-1) 0%, var(--color-rb-2) 5%, var(--color-rb-3) 10%,
+    var(--color-rb-4) 15%, var(--color-rb-5) 20%, var(--color-rb-6) 25%,
+    var(--color-rb-5) 30%, var(--color-rb-4) 35%, var(--color-rb-3) 40%,
+    var(--color-rb-2) 45%, var(--color-rb-1) 50%);
+}
+.btn-rainbow__icon { transition: transform var(--dur-fast) var(--ease-out); }
+@media (hover: hover) {
+  .btn-rainbow:hover .btn-rainbow__icon { transform: translateY(3px); }
+}
+.btn-rainbow:active { transform: scale(0.97); }
+@media (forced-colors: active) {
+  .btn-rainbow { border: 1.5px solid ButtonText; }
+}
+
+/* 6. NAV ================================================================= */
+.site-header {
+  position: fixed;
+  inset: var(--nav-offset) 0 auto;
+  z-index: var(--z-header);
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--gutter);
+  pointer-events: none;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.site-header.is-hidden { transform: translateY(calc(-100% - var(--nav-offset) - 8px)); }
+
+.nav {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+  width: 100%;
+  max-width: 480px;
+  height: var(--nav-height);
+  padding: 0 var(--spacing-8) 0 var(--spacing-20);
+  border-radius: var(--radius-nav);
+  background: var(--surface-sticky-nav);
+  box-shadow: var(--hairline), var(--shadow-md);
+}
+
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  min-height: 44px;
+  font-family: var(--font-ui);
+  font-weight: var(--font-weight-semibold);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+/* Marca: cuadradito arcoíris 12px */
+.brand-mark {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--gradient-rainbow-spectrum);
+  flex: none;
+}
+
+.nav__links { display: flex; align-items: center; gap: 0; }
+@media (min-width: 768px) {
+  .nav__links { gap: var(--spacing-4); }
+  .nav .ghost-link { font-size: 15px; padding-inline: var(--spacing-16); }
+}
+
+/* 7. HERO + COLLAGE ====================================================== */
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: calc(var(--nav-height) + var(--nav-offset) + var(--spacing-40)) var(--gutter) var(--spacing-64);
+  overflow: clip;
+  text-align: center;
+}
+
+.hero__content {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-24);
+  max-width: 900px;
+}
+
+.hero__title { margin-block: var(--spacing-4) var(--spacing-8); }
+.hero__line { display: block; }
+
+/* Cada palabra es una máscara: el contenido interno se anima desde abajo (etapa motion) */
+.word {
+  display: inline-block;
+  overflow: clip;
+  overflow-clip-margin: 0.1em;
+  padding: 0.04em 0 0.1em;
+  margin: -0.04em 0 -0.1em;
+  vertical-align: top;
+}
+.word__in { display: inline-block; }
+.word--italic { padding-right: 0.06em; }
+
+/* Collage: cards Polaroid inclinadas, cortadas por el viewport.
+   item = posición + parallax scroll, drift = parallax mouse, polaroid = rotación/entrada */
+.hero__collage {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-collage);
+  pointer-events: none;
+}
+
+.collage__item {
+  position: absolute;
+  width: var(--w);
+  left: var(--x, auto);
+  right: var(--xr, auto);
+  top: var(--y, auto);
+  bottom: var(--yb, auto);
+}
+.collage__drift { will-change: transform; }
+
+.polaroid {
+  padding: 6px;
+  border-radius: var(--radius-cards);
+  background: var(--surface-card);
+  box-shadow: var(--hairline);
+  transform: rotate(var(--r));
+}
+.polaroid img {
+  width: 100%;
+  aspect-ratio: var(--ar, 4 / 5);
+  object-fit: cover;
+  border-radius: calc(var(--radius-images) - 6px);
+  background: var(--color-mist-hairline);
+}
+
+/* Mobile: 4 cards en las esquinas */
+.collage__item:nth-child(n + 5) { display: none; }
+.collage__item:nth-child(1) { --w: 128px; --x: -34px; --y: 13%;  --r: -6deg; --ar: 4 / 5; }
+.collage__item:nth-child(2) { --w: 150px; --xr: -46px; --y: 15%; --r: 5deg;  --ar: 5 / 4; }
+.collage__item:nth-child(3) { --w: 150px; --x: -40px; --yb: 7%;  --r: 4deg;  --ar: 5 / 4; }
+.collage__item:nth-child(4) { --w: 124px; --xr: -30px; --yb: 4%; --r: -5deg; --ar: 4 / 5; }
+
+@media (min-width: 768px) {
+  .collage__item:nth-child(n + 5) { display: block; }
+  .collage__item:nth-child(1) { --w: 190px; --x: -40px; --y: 15%;   --r: -6deg; }
+  .collage__item:nth-child(2) { --w: 230px; --xr: -50px; --y: 13%;  --r: 5deg; }
+  .collage__item:nth-child(3) { --w: 220px; --x: 2%;    --yb: 10%;  --r: 4deg; }
+  .collage__item:nth-child(4) { --w: 180px; --xr: 3%;   --yb: 8%;   --r: -4deg; }
+  .collage__item:nth-child(5) { --w: 170px; --x: 33%;   --yb: -90px; --r: -3deg; --ar: 5 / 4; }
+  .collage__item:nth-child(6) { --w: 150px; --xr: 2%;   --yb: -110px; --r: 6deg;  --ar: 4 / 5; }
+}
+
+@media (min-width: 1024px) {
+  .collage__item:nth-child(1) { --w: 220px; --x: -3%;  --y: 14%; }
+  .collage__item:nth-child(2) { --w: 260px; --xr: -3%; --y: 12%; }
+  .collage__item:nth-child(3) { --w: 250px; --x: 7%;   --yb: 9%; }
+  .collage__item:nth-child(4) { --w: 210px; --xr: 8%;  --yb: 7%; }
+  .collage__item:nth-child(5) { --w: 200px; --x: 27%; }
+  .collage__item:nth-child(6) { --w: 180px; --xr: 30%; --yb: -100px; }
+}

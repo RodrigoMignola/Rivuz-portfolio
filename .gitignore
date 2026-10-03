@@ -1,0 +1,12 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Dependencias y herramientas locales (el sitio no tiene build)
+node_modules/
+.netlify/
+lighthouse-*.html
+*.log
