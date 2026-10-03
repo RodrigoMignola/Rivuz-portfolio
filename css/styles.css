@@ -5,7 +5,7 @@
    1. Design tokens        5. Botones / links / chips
    2. Reset + base         6. Nav
    3. Tipografía           7. Hero + collage
-   4. Utilidades
+   4. Utilidades           8. Proyectos (carrusel / acordeón)
    ========================================================================== */
 
 /* 1. DESIGN TOKENS ======================================================== */
@@ -144,7 +144,7 @@ body {
 img, svg { display: block; max-width: 100%; }
 img { height: auto; }
 a { color: inherit; text-decoration: none; }
-ul[role="list"] { list-style: none; padding: 0; }
+:where(ul[role="list"]) { list-style: none; padding: 0; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
 :focus-visible {
@@ -471,4 +471,254 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .collage__item:nth-child(4) { --w: 210px; --xr: 8%;  --yb: 7%; }
   .collage__item:nth-child(5) { --w: 200px; --x: 27%; }
   .collage__item:nth-child(6) { --w: 180px; --xr: 30%; --yb: -100px; }
+}
+
+/* 8. PROYECTOS ============================================================
+   Mobile/tablet: carrusel nativo con scroll-snap, la card centrada se destaca.
+   Desktop (puntero fino ≥ 1024px): fila tipo acordeón, card activa ancha.
+   Con GSAP (etapa motion) la sección se fija (pin) y el scroll mueve el track. */
+.projects {
+  --card-w: min(78vw, 320px);
+  --card-ar: 3 / 4;
+  position: relative;
+  padding-top: var(--section-gap);
+}
+
+.projects__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-24);
+}
+
+.projects__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+.projects__count {
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.025em;
+  color: var(--color-iron-quiet);
+  white-space: nowrap;
+}
+.projects__count span:first-child { color: var(--color-portrait-ink); }
+
+.projects__arrows { display: none; gap: var(--spacing-4); }
+@media (hover: hover) and (pointer: fine) {
+  .js .projects__arrows { display: flex; }
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-tags);
+  color: var(--color-portrait-ink);
+  transition: background-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.icon-btn:hover { background: var(--surface-tinted-wash); }
+.icon-btn:disabled { opacity: 0.35; cursor: default; background: none; }
+
+.projects__noscript { padding-block: var(--spacing-24); }
+
+/* Viewport = scroller horizontal nativo */
+.projects__viewport {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-block: var(--spacing-16) var(--spacing-48);
+}
+.projects__viewport::-webkit-scrollbar { display: none; }
+
+.projects__track {
+  display: flex;
+  gap: var(--element-gap);
+  width: max-content;
+  /* padding lateral para que la primera y la última card puedan centrarse */
+  padding-inline: max(var(--gutter), calc(50vw - var(--card-w) / 2));
+}
+
+/* Card ------------------------------------------------------------------ */
+.card {
+  position: relative;
+  flex: none;
+  width: var(--card-w);
+  scroll-snap-align: center;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.card__link {
+  position: relative;
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-cards);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+/* sombra elevada en una capa aparte: se anima solo su opacidad */
+.card__link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--shadow-subtle-3);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.card__frame {
+  position: relative;
+  height: 100%;
+  aspect-ratio: var(--card-ar);
+  overflow: hidden;
+  border-radius: inherit;
+  background: var(--color-mist-hairline);
+  box-shadow: var(--shadow-subtle-2);
+  isolation: isolate;
+}
+/* velo para atenuar las cards no activas (solo la imagen, no el texto) */
+.card__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgb(255 255 255 / 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.card__img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.card__index {
+  position: absolute;
+  z-index: 1;
+  top: var(--spacing-12);
+  left: var(--spacing-12);
+  padding: 4px 10px;
+  border-radius: var(--radius-tags);
+  background: var(--surface-card);
+  box-shadow: var(--hairline);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.025em;
+}
+
+.card__body {
+  position: absolute;
+  z-index: 1;
+  left: var(--spacing-12);
+  right: var(--spacing-12);
+  bottom: var(--spacing-12);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-8) var(--spacing-12);
+  padding: var(--spacing-12) var(--spacing-12) var(--spacing-12) var(--card-padding);
+  border-radius: var(--radius-inputs);
+  background: var(--surface-card);
+  box-shadow: var(--hairline);
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.card__body .tag { justify-self: start; grid-column: 1; }
+
+.card__title {
+  grid-column: 1;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card__arrow {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-tags);
+  background: var(--surface-tinted-wash);
+  overflow: hidden;
+}
+.card__arrow .icon { transition: transform var(--dur-base) var(--ease-out); }
+
+/* Interacción: hover (desktop) y :active (touch) */
+@media (hover: hover) {
+  .card__link:hover { transform: translateY(-6px); }
+  .card__link:hover::before { opacity: 1; }
+  .card__link:hover .card__img { transform: scale(1.05); }
+  .card__link:hover .card__arrow .icon { transform: translate(3px, -3px); }
+}
+.card__link:active { transform: scale(0.98); }
+.card__link:active .card__arrow .icon { transform: translate(3px, -3px); }
+.card__link:focus-visible { outline-offset: 4px; }
+.card__link:focus-visible .card__arrow .icon { transform: translate(3px, -3px); }
+
+/* Carrusel (JS activo): la card centrada se destaca, el resto se reduce un poco */
+.js .projects:not(.is-accordion) .card:not(.is-active) { transform: scale(0.92); }
+.js .projects:not(.is-accordion) .card:not(.is-active) .card__frame::after { opacity: 1; }
+
+@media (min-width: 768px) {
+  .projects { --card-w: 340px; }
+}
+
+/* Desktop: acordeón. La card activa es ancha y las demás angostas.
+   Se expande con hover/foco; sin hover manda la activa (scroll o flechas).
+   Nota: el ancho (flex-basis) es la única propiedad no-transform animada, a propósito:
+   la imagen tiene ancho fijo y solo se recorta, así que no hay re-decode ni reflow pesado. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .projects {
+    --card-h: min(62vh, 540px);
+    --card-wide: min(50vw, 640px);
+    --card-narrow: 128px;
+  }
+  .projects__head { margin-bottom: var(--spacing-32); }
+  .projects__viewport { scroll-snap-type: none; padding-block: var(--spacing-16) var(--spacing-56); }
+  .projects__track {
+    height: calc(var(--card-h) + 0px);
+    padding-inline: max(var(--gutter), calc((100vw - var(--page-max-width)) / 2));
+    gap: var(--element-gap);
+  }
+
+  .card {
+    width: auto;
+    height: 100%;
+    flex: 0 0 var(--card-narrow);
+    transition: flex-basis var(--dur-slow) var(--ease-out);
+  }
+  .card__frame { aspect-ratio: auto; }
+
+  /* imagen con ancho fijo (el de la card abierta), centrada: al cerrarse solo se recorta */
+  .card__img {
+    width: var(--card-wide);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .card__link:hover .card__img { transform: translateX(-50%) scale(1.05); }
+
+  .card__body { opacity: 0; transform: translateY(12px); pointer-events: none; }
+
+  .card.is-open { flex-basis: var(--card-wide); }
+  .card.is-open .card__body { opacity: 1; transform: none; transition-delay: 150ms; }
+  .card:not(.is-open) .card__frame::after { opacity: 1; }
 }

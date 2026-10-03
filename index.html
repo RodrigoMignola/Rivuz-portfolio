@@ -79,8 +79,33 @@
     </section>
 
     <!-- PROYECTOS -->
-    <section class="projects" id="proyectos" aria-labelledby="projects-title">
-      <h2 id="projects-title">Proyectos</h2>
+    <!-- Desktop: sección con pin, el scroll vertical mueve las cards en horizontal (GSAP).
+         Mobile / sin JS / reduced-motion: carrusel nativo con scroll-snap. -->
+    <section class="projects" id="proyectos" aria-labelledby="projects-title" data-projects>
+      <div class="projects__pin" data-projects-pin>
+        <div class="container projects__head">
+          <h2 class="heading-lg" id="projects-title" data-reveal>Proyectos</h2>
+          <div class="projects__meta" data-reveal style="--i:1">
+            <p class="projects__count" aria-hidden="true"><span data-count-current>01</span> / <span data-count-total>08</span></p>
+            <div class="projects__arrows">
+              <button class="icon-btn" type="button" data-prev aria-label="Proyecto anterior">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+              </button>
+              <button class="icon-btn" type="button" data-next aria-label="Proyecto siguiente">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="projects__viewport" data-projects-viewport>
+          <!-- Las cards se generan desde el array `projects` (js/main.js) -->
+          <ul class="projects__track" role="list" data-projects-track></ul>
+        </div>
+        <noscript>
+          <p class="container projects__noscript">Activá JavaScript para ver los proyectos.</p>
+        </noscript>
+      </div>
     </section>
 
     <!-- CONTACTO -->
