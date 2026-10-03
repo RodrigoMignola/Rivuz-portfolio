@@ -24,7 +24,6 @@ Buscá `TODO` en el proyecto (`grep -rn TODO index.html js css`). Falta completa
       (mismo nombre de archivo, así no hay que tocar el código) y completar los `alt`.
 - [ ] **Galería de Basalto**: reemplazar `assets/projects/basalto/basalto-01…04.webp` por las
       imágenes finales (se pueden agregar o quitar entradas en `gallery`).
-- [ ] **Contacto**: email, LinkedIn, Behance y WhatsApp (`index.html`, sección `#contacto`).
 - [ ] **Nombre**: en el `<title>` y en el footer (`index.html`).
 - [ ] **Open Graph**: cuando tengas la URL de Netlify, poné rutas absolutas en `og:image`
       (ej. `https://tu-sitio.netlify.app/assets/og-image.png`) y agregá `og:url`.
@@ -124,12 +123,13 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
 | Proyectos | Carrusel nativo con scroll-snap, la card centrada se destaca | Sección con pin: el scroll vertical avanza las cards y abre la activa; hover expande. Con un solo proyecto filtrado no hay pin |
 | Filtro | Las cards salen y entran escalonadas | Igual, y el pin se recalcula según la cantidad de cards |
 | Hero | Entrada animada + parallax de scroll | + parallax con el mouse |
-| Cursor | Nativo | Punto propio que se convierte en una burbuja "Ver" sobre las cards |
-| Botones | `:active` | Magnéticos |
+| Cursor | Nativo | Nativo + una burbuja "Ver" que aparece solo sobre las cards |
+| Botones | `:active` | Magnéticos (suaves, máx. 6px) |
+| Fondo | Grilla de puntos + resplandores azules que derivan lento | Igual |
 
 **Accesibilidad y fallbacks**
 
-- Con `prefers-reduced-motion: reduce` no se carga GSAP, no hay pin, parallax ni cursor, y todo
+- Con `prefers-reduced-motion: reduce` no se carga GSAP, no hay pin, parallax, burbuja ni fondo animado, y todo
   queda visible en su estado final.
 - Sin JavaScript, el hero y el contacto funcionan; las cards de proyectos necesitan JS
   porque se generan desde el array.
@@ -140,8 +140,10 @@ Alternativa sin Git: arrastrá la carpeta del proyecto a <https://app.netlify.co
 
 ## Design system
 
-- Canvas blanco, texto Portrait Ink `#08304c`, color solo en lavados pastel (mint, sky, peach).
-- Arcoíris solo en **un CTA por vista** y en **una palabra en cursiva por titular**.
+- Canvas blanco con una grilla de puntos tenue y resplandores azules muy suaves; texto Portrait Ink
+  `#08304c`; color en lavados pastel (mint, sky, peach) en las pastillas.
+- **Gradiente de marca azul/celeste** (`--gradient-brand`, reemplaza al arcoíris de DESIGN.md):
+  solo en **un CTA por vista**, en **una palabra en cursiva por titular** y en el cuadradito de la marca/favicon.
 - Radios: cards 24px, botones 28px, tags 9999px. Sombras de varias capas, máximo 8% de opacidad.
 - Tipografías: Plus Jakarta Sans (sustituta de Basier Circle) para titulares de 31px o más, con
   tracking negativo, y Switzer para UI y cuerpo.

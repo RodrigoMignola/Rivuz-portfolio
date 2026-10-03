@@ -36,6 +36,7 @@ const projects = [
   },
   { title: 'Mariela Martinez Negocios Inmobiliarios', type: 'sitio', status: 'terminado', url: 'https://marielamartinezinmobiliaria.com.ar/', image: 'assets/projects/mariela-martinez.webp', alt: 'TODO: describir el diseño de Mariela Martinez Negocios Inmobiliarios' },
   { title: 'La Alameda', type: 'sitio', status: 'terminado', url: 'https://www.laalameda.com.ar/', image: 'assets/projects/la-alameda.webp', alt: 'TODO: describir el diseño de La Alameda' },
+  { title: '3D Design', type: 'behance', status: 'terminado', url: 'https://www.behance.net/rodrigomignola', image: 'assets/projects/3d-design.webp', alt: 'TODO: describir los trabajos de diseño 3D' },
 ];
 
 /** FILTROS — `id` debe coincidir con el `status` de los proyectos ("all" = todos). */
@@ -242,15 +243,24 @@ function initProjects(cards) {
   // Acordeón: hover y foco abren la card.
   // Se usa pointermove con movimiento real: al expandirse, las cards se desplazan bajo
   // un mouse quieto y pointerenter abriría la vecina (efecto "salto").
+  // Además hay "hover-intent": la card se abre recién cuando el mouse se detiene un instante,
+  // así cruzar la fila con el mouse no abre y cierra cards sin parar.
+  let intent = 0;
   track.addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse' || !isAccordion() || (!e.movementX && !e.movementY)) return;
     const k = ctl.cards.indexOf(e.target.closest('.card'));
-    if (k > -1 && k !== ctl.hovered) {
+    clearTimeout(intent);
+    if (k < 0 || k === ctl.hovered) return;
+    intent = setTimeout(() => {
       ctl.hovered = k;
       ctl.syncOpen();
-    }
+    }, 140);
   });
-  track.addEventListener('pointerleave', () => { ctl.hovered = null; ctl.syncOpen(); });
+  track.addEventListener('pointerleave', () => {
+    clearTimeout(intent);
+    ctl.hovered = null;
+    ctl.syncOpen();
+  });
   track.addEventListener('focusin', (e) => {
     const k = ctl.cards.indexOf(e.target.closest('.card'));
     if (k < 0) return;
@@ -441,9 +451,9 @@ function initCollageParallax() {
   let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, heroVisible = true;
 
   const loop = () => {
-    cx += (tx - cx) * 0.08;
-    cy += (ty - cy) * 0.08;
-    drifts.forEach(({ el, d }) => { el.style.transform = `translate3d(${(cx * d * 36).toFixed(2)}px, ${(cy * d * 28).toFixed(2)}px, 0)`; });
+    cx += (tx - cx) * 0.05;
+    cy += (ty - cy) * 0.05;
+    drifts.forEach(({ el, d }) => { el.style.transform = `translate3d(${(cx * d * 16).toFixed(2)}px, ${(cy * d * 12).toFixed(2)}px, 0)`; });
     raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.001 ? requestAnimationFrame(loop) : 0;
   };
   addEventListener('pointermove', (e) => {
@@ -459,11 +469,14 @@ function initCollageParallax() {
 function initMagnetic() {
   if (!media.finePointer.matches || !motionOK()) return;
   $$('[data-magnetic]').forEach((el) => {
-    const strength = el.classList.contains('btn-rainbow') ? 0.35 : 0.25;
+    const strength = el.classList.contains('btn-gradient') ? 0.16 : 0.1;
+    const max = 6; // px: desplazamiento máximo, para que no se sienta "nervioso"
+    const clamp = (v) => Math.max(-max, Math.min(max, v));
     el.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
       const r = el.getBoundingClientRect();
-      const x = (e.clientX - (r.left + r.width / 2)) * strength;
-      const y = (e.clientY - (r.top + r.height / 2)) * strength;
+      const x = clamp((e.clientX - (r.left + r.width / 2)) * strength);
+      const y = clamp((e.clientY - (r.top + r.height / 2)) * strength);
       el.classList.add('is-magnet');
       el.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
     });
@@ -474,40 +487,36 @@ function initMagnetic() {
   });
 }
 
-/* Cursor personalizado: punto + burbuja "Ver" sobre las cards (solo puntero fino) */
+/* Burbuja "Ver" sobre las cards (solo puntero fino).
+   El cursor nativo se mantiene siempre: la burbuja lo acompaña con un retardo suave. */
 function initCursor() {
   if (!media.finePointer.matches || !motionOK()) return;
-  const cursor = document.createElement('div');
-  cursor.className = 'cursor';
-  cursor.setAttribute('aria-hidden', 'true');
-  cursor.innerHTML = '<div class="cursor__dot"></div><div class="cursor__bubble">Ver</div>';
-  document.body.append(cursor);
-  document.documentElement.classList.add('has-cursor');
+  const bubble = document.createElement('div');
+  bubble.className = 'cursor-bubble';
+  bubble.setAttribute('aria-hidden', 'true');
+  bubble.textContent = 'Ver';
+  document.body.append(bubble);
 
-  const dot = $('.cursor__dot', cursor);
-  const bubble = $('.cursor__bubble', cursor);
-  let x = -100, y = -100, bx = x, by = y, raf = 0;
-
+  let x = 0, y = 0, bx = 0, by = 0, raf = 0, active = false;
   const loop = () => {
-    bx += (x - bx) * 0.2;
-    by += (y - by) * 0.2;
-    dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    bubble.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
-    raf = Math.abs(x - bx) + Math.abs(y - by) > 0.1 ? requestAnimationFrame(loop) : 0;
+    bx += (x - bx) * 0.25;
+    by += (y - by) * 0.25;
+    bubble.style.transform = `translate3d(${bx.toFixed(1)}px, ${by.toFixed(1)}px, 0)`;
+    raf = Math.abs(x - bx) + Math.abs(y - by) > 0.2 ? requestAnimationFrame(loop) : 0;
   };
 
   addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse') return;
     x = e.clientX;
     y = e.clientY;
-    cursor.classList.add('is-visible');
-    const target = e.target.closest?.('a, button, [data-cursor]');
-    cursor.classList.toggle('is-view', target?.dataset.cursor === 'view');
-    cursor.classList.toggle('is-link', !!target && target.dataset.cursor !== 'view');
-    if (!raf) raf = requestAnimationFrame(loop);
+    const over = !!e.target.closest?.('[data-cursor="view"]');
+    if (over && !active) { bx = x; by = y; } // aparece donde está el mouse, sin "viajar"
+    active = over;
+    bubble.classList.toggle('is-visible', over);
+    if (over && !raf) raf = requestAnimationFrame(loop);
   }, { passive: true });
-  document.addEventListener('pointerleave', () => cursor.classList.remove('is-visible'));
-  addEventListener('blur', () => cursor.classList.remove('is-visible'));
+  document.addEventListener('pointerleave', () => bubble.classList.remove('is-visible'));
+  addEventListener('blur', () => bubble.classList.remove('is-visible'));
 }
 
 /* Proyectos en desktop: pin con GSAP ScrollTrigger.
@@ -567,7 +576,7 @@ function initProjectsPin(ctl) {
         return Math.max(Math.min(vw / 2 - center, 0), Math.min(vw - totalW, 0));
       };
       const moveTo = (i, instant) =>
-        gsap.to(track, { x: xFor(i), duration: instant ? 0 : 0.7, ease: 'expo.out', overwrite: true });
+        gsap.to(track, { x: xFor(i), duration: instant ? 0 : 0.9, ease: 'power3.out', overwrite: true });
 
       let st = null;
       // (Re)construye el pin según la cantidad de cards visibles (cambia con el filtro)
@@ -587,9 +596,8 @@ function initProjectsPin(ctl) {
           trigger: pinEl,
           pin: true,
           start: 'top top',
-          end: () => '+=' + Math.round((count() - 1) * innerHeight * 0.55),
+          end: () => '+=' + Math.round((count() - 1) * innerHeight * 0.7),
           invalidateOnRefresh: true,
-          snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, delay: 0.08, ease: 'power2.out' },
           onRefresh: () => { measure(); moveTo(ctl.active, true); },
           onUpdate: (self) => {
             const i = Math.round(self.progress * (count() - 1));

@@ -3,6 +3,13 @@
 
 **Theme:** light
 
+> **Override de este proyecto (RIVUZ):** el arcoíris se reemplaza por un gradiente de marca azul/celeste,
+> con un tono más tecnológico: `linear-gradient(90deg, #1e3a8a, #2563eb 30%, #0ea5e9 70%, #06b6d4)`
+> (token `--gradient-brand`). Mantiene las mismas reglas de uso que el arcoíris: un CTA por vista,
+> una palabra en cursiva por titular y la marca/favicon. Además, el canvas blanco lleva una grilla de
+> puntos tenue y resplandores azules muy suaves que derivan lento. Donde este documento dice
+> "rainbow", leé "gradiente de marca".
+
 Source measurements are normalized; roles and recommendations are interpreted. Font summary lists are independent, not paired by position. HTML examples are reconstructions, not source components.
 
 Portrait is a sunlit, deeply personal canvas for identity: a near-white page where a single deep-navy ink carries almost all text and structural lines, and color appears only as warm pastel surface washes or a signature rainbow that bleeds through italicized words, button borders, and small decorative strokes. The type system is two-voice — Switzer for steady UI, Basier Circle for giant display headlines that compress tight against each other — and the geometry favors generous rounding (24px cards, 28px pill buttons) with barely-there shadows that let content float rather than stamp itself. Everything reads like a scrapbook: scattered tilted photo cards, mint and peach and sky-blue tints, a thin rainbow border around the Sign up button, and a sticky pill nav that hovers above the page with a whisper of elevation. The overall density is comfortable, the rhythm is calm, and the brand voice is warm but restrained — let the user be loud, keep the frame quiet.

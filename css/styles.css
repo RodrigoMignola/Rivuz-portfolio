@@ -6,6 +6,7 @@
    2. Reset + base         6. Nav
    3. Tipografía           7. Hero + collage
    4. Utilidades           8. Proyectos (carrusel / acordeón)
+   4b. Fondo vivo
                            9. Contacto + footer
                            10. Motion: progreso, cursor, entradas, parallax, revelado
    ========================================================================== */
@@ -15,13 +16,15 @@
   /* Colores */
   --color-portrait-ink: #08304c;
   --color-nautical-teal: #084e72;
-  --gradient-rainbow-spectrum: linear-gradient(90deg, rgb(38, 192, 255), rgb(230, 0, 194) 20%, rgb(255, 73, 78) 40%, rgb(255, 161, 62) 60%, rgb(255, 200, 55) 80%, rgb(0, 204, 61));
-  --color-rb-1: rgb(38, 192, 255);
-  --color-rb-2: rgb(230, 0, 194);
-  --color-rb-3: rgb(255, 73, 78);
-  --color-rb-4: rgb(255, 161, 62);
-  --color-rb-5: rgb(255, 200, 55);
-  --color-rb-6: rgb(0, 204, 61);
+  /* Gradiente de marca (override del proyecto sobre el arcoíris de DESIGN.md):
+     azules y celestes, tono tecnológico. Mismo uso restringido: 1 CTA por vista,
+     1 palabra en cursiva por titular, la marca y los detalles del fondo. */
+  --color-brand-1: #1e3a8a; /* azul profundo */
+  --color-brand-2: #2563eb; /* azul eléctrico */
+  --color-brand-3: #3b82f6; /* cobalt pop */
+  --color-brand-4: #0ea5e9; /* celeste */
+  --color-brand-5: #06b6d4; /* cian */
+  --gradient-brand: linear-gradient(90deg, var(--color-brand-1), var(--color-brand-2) 30%, var(--color-brand-4) 70%, var(--color-brand-5));
   --color-charcoal-outline: #353535;
   --color-graphite-body: #2c2c2c;
   --color-slate-helper: #797979;
@@ -186,17 +189,17 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   word-spacing: var(--display-word-spacing);
 }
 
-/* Única palabra cursiva con relleno arcoíris por titular */
-.rainbow-text {
+/* Única palabra cursiva con relleno de gradiente por titular */
+.gradient-text {
   font-style: italic;
-  background: var(--gradient-rainbow-spectrum);
+  background: var(--gradient-brand);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   padding-right: 0.08em; /* evita que la cursiva se recorte */
 }
 @media (forced-colors: active) {
-  .rainbow-text { background: none; color: CanvasText; }
+  .gradient-text { background: none; color: CanvasText; }
 }
 
 /* 4. UTILIDADES =========================================================== */
@@ -229,6 +232,49 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transition: transform var(--dur-fast) var(--ease-out);
 }
 .skip-link:focus-visible { transform: none; }
+
+/* 4b. FONDO VIVO ==========================================================
+   El canvas sigue siendo blanco: encima hay una grilla de puntos muy tenue
+   (se desvanece hacia los bordes) y tres resplandores azules/celestes que
+   derivan lento. Solo se anima transform; con reduced-motion queda quieto. */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(8 48 76 / 0.1) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 20%, transparent 80%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 20%, transparent 80%);
+}
+.bg__glow {
+  position: absolute;
+  width: 70vmax;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  will-change: transform;
+}
+.bg__glow--1 {
+  top: -32vmax;
+  left: -24vmax;
+  background: radial-gradient(closest-side, rgb(37 99 235 / 0.13), transparent);
+}
+.bg__glow--2 {
+  top: 18vh;
+  right: -34vmax;
+  background: radial-gradient(closest-side, rgb(6 182 212 / 0.13), transparent);
+}
+.bg__glow--3 {
+  bottom: -40vmax;
+  left: 10vw;
+  background: radial-gradient(closest-side, rgb(14 165 233 / 0.1), transparent);
+}
 
 /* 5. BOTONES / LINKS / CHIPS ============================================= */
 
@@ -271,9 +317,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .ghost-link:hover { background: var(--surface-tinted-wash); }
 }
 
-/* CTA primario: pill transparente con contorno arcoíris de 1.5px.
+/* CTA primario: pill transparente con contorno de gradiente de 1.5px.
    El aro es una máscara; adentro una tira de gradiente se desplaza con transform. */
-.btn-rainbow {
+.btn-gradient {
   position: relative;
   isolation: isolate;
   display: inline-flex;
@@ -291,7 +337,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   line-height: 1;
   white-space: nowrap;
 }
-.btn-rainbow__ring {
+.btn-gradient__ring {
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -303,25 +349,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
-.btn-rainbow__ring::before {
+.btn-gradient__ring::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
   width: 400%;
-  /* espectro de ida y vuelta: en reposo se ve exactamente el gradiente del sistema */
+  /* gradiente de ida y vuelta: en reposo se ve exactamente el gradiente de marca */
   background: repeating-linear-gradient(90deg,
-    var(--color-rb-1) 0%, var(--color-rb-2) 5%, var(--color-rb-3) 10%,
-    var(--color-rb-4) 15%, var(--color-rb-5) 20%, var(--color-rb-6) 25%,
-    var(--color-rb-5) 30%, var(--color-rb-4) 35%, var(--color-rb-3) 40%,
-    var(--color-rb-2) 45%, var(--color-rb-1) 50%);
+    var(--color-brand-1) 0%, var(--color-brand-2) 7.5%, var(--color-brand-4) 17.5%, var(--color-brand-5) 25%,
+    var(--color-brand-4) 32.5%, var(--color-brand-2) 42.5%, var(--color-brand-1) 50%);
 }
-.btn-rainbow__icon { transition: transform var(--dur-fast) var(--ease-out); }
+.btn-gradient__icon { transition: transform var(--dur-fast) var(--ease-out); }
 @media (hover: hover) {
-  .btn-rainbow:hover .btn-rainbow__icon { transform: translateY(3px); }
+  .btn-gradient:hover .btn-gradient__icon { transform: translateY(3px); }
 }
-.btn-rainbow:active { transform: scale(0.97); }
+.btn-gradient:active { transform: scale(0.97); }
 @media (forced-colors: active) {
-  .btn-rainbow { border: 1.5px solid ButtonText; }
+  .btn-gradient { border: 1.5px solid ButtonText; }
 }
 
 /* 6. NAV ================================================================= */
@@ -363,12 +407,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   letter-spacing: 0.02em;
 }
 
-/* Marca: cuadradito arcoíris 12px */
+/* Marca: cuadradito con gradiente 12px */
 .brand-mark {
   width: 12px;
   height: 12px;
   border-radius: 3px;
-  background: var(--gradient-rainbow-spectrum);
+  background: var(--gradient-brand);
   flex: none;
 }
 
@@ -827,10 +871,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   gap: var(--spacing-12) var(--spacing-4);
   margin-top: var(--spacing-8);
 }
-.contact__links li:first-child { flex-basis: 100%; display: flex; justify-content: center; }
-@media (min-width: 768px) {
-  .contact__links li:first-child { flex-basis: auto; margin-right: var(--spacing-12); }
-}
+.contact__links li:first-child { margin-right: var(--spacing-8); }
 .ghost-link--arrow { gap: var(--spacing-4); padding-inline: 10px; font-size: 15px; }
 @media (min-width: 768px) {
   .ghost-link--arrow { padding-inline: var(--spacing-16); font-size: var(--text-body); }
@@ -915,10 +956,6 @@ html:has(.gallery[open]) { overflow: hidden; }
   padding: var(--spacing-8) 0 var(--spacing-12);
 }
 
-/* El cursor propio queda debajo del top layer: dentro del diálogo vuelve el nativo */
-html.has-cursor .gallery,
-html.has-cursor .gallery * { cursor: auto; }
-html.has-cursor .gallery button { cursor: pointer; }
 
 /* 10. MOTION =============================================================
    Todo anima solo transform/opacity. Con prefers-reduced-motion: reduce,
@@ -947,53 +984,31 @@ html.has-cursor .gallery button { cursor: pointer; }
 }
 @keyframes progress-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-/* Cursor personalizado (solo puntero fino; lo crea main.js) */
-.cursor {
+/* Burbuja "Ver" sobre las cards (solo puntero fino; la crea main.js).
+   El cursor nativo no se oculta nunca. */
+.cursor-bubble {
   position: fixed;
   top: 0;
   left: 0;
   z-index: var(--z-cursor);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease-out);
-}
-.cursor.is-visible { opacity: 1; }
-.cursor__dot,
-.cursor__bubble {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border-radius: 50%;
-  will-change: transform;
-}
-.cursor__dot {
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
-  background: var(--color-portrait-ink);
-  transition: scale var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
-}
-.cursor__bubble {
   display: grid;
   place-items: center;
-  width: 84px;
-  height: 84px;
-  margin: -42px 0 0 -42px;
+  width: 72px;
+  height: 72px;
+  margin: 14px 0 0 14px; /* al costado del puntero, sin taparlo */
+  border-radius: 50%;
   background: var(--color-portrait-ink);
   color: var(--color-white-canvas);
   font-size: 14px;
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.025em;
-  scale: 0.2;
+  pointer-events: none;
+  will-change: transform;
   opacity: 0;
-  transition: scale var(--dur-base) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+  scale: 0.4;
+  transition: opacity var(--dur-fast) var(--ease-out), scale var(--dur-base) var(--ease-out);
 }
-.cursor.is-link .cursor__dot { scale: 2.6; opacity: 0.18; }
-.cursor.is-view .cursor__dot { scale: 0; }
-.cursor.is-view .cursor__bubble { scale: 1; opacity: 1; }
-html.has-cursor,
-html.has-cursor a,
-html.has-cursor button { cursor: none; }
+.cursor-bubble.is-visible { opacity: 1; scale: 1; }
 
 /* Botones magnéticos: usan la propiedad `translate` (se suma al transform propio) */
 [data-magnetic] { transition: translate var(--dur-base) var(--ease-out); }
@@ -1002,8 +1017,8 @@ html.has-cursor button { cursor: none; }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 
-  /* Borde arcoíris animado del CTA */
-  .btn-rainbow__ring::before { animation: ring-flow 7s linear infinite; }
+  /* Borde con gradiente animado del CTA */
+  .btn-gradient__ring::before { animation: ring-flow 7s linear infinite; }
 
   /* Entrada del hero: palabras con máscara, luego eyebrow, CTA y collage escalonado */
   .hero__eyebrow { animation: fade-up var(--dur-slow) var(--ease-out) 80ms both; }
@@ -1012,6 +1027,15 @@ html.has-cursor button { cursor: none; }
   .polaroid { animation: polaroid-in var(--dur-slow) var(--ease-out) calc(300ms + var(--i, 0) * 90ms) both; }
 
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .bg__glow--1 { animation: glow-drift-1 28s ease-in-out infinite alternate; }
+  .bg__glow--2 { animation: glow-drift-2 34s ease-in-out infinite alternate; }
+  .bg__glow--3 { animation: glow-drift-3 40s ease-in-out infinite alternate; }
+}
+@keyframes glow-drift-1 { to { transform: translate3d(18vw, 14vh, 0) scale(1.15); } }
+@keyframes glow-drift-2 { to { transform: translate3d(-16vw, 20vh, 0) scale(0.9); } }
+@keyframes glow-drift-3 { to { transform: translate3d(14vw, -22vh, 0) scale(1.1); } }
 
 @keyframes ring-flow { to { transform: translateX(-50%); } }
 @keyframes fade-up {
