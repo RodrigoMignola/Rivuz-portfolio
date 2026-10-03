@@ -44,6 +44,9 @@
 <body>
   <a class="skip-link" href="#proyectos">Saltar a los proyectos</a>
 
+  <!-- Barra de progreso de scroll (CSS scroll-timeline, con fallback JS) -->
+  <div class="scroll-progress" aria-hidden="true"><span class="scroll-progress__bar" data-progress></span></div>
+
   <!-- Nav: pill flotante. Se oculta al bajar y reaparece al subir (main.js) -->
   <header class="site-header" data-header>
     <nav class="nav" aria-label="Principal">
@@ -67,8 +70,8 @@
       <div class="hero__content">
         <p class="eyebrow eyebrow--sky hero__eyebrow">Portfolio</p>
         <h1 class="hero__title" id="hero-title">
-          <span class="hero__line"><span class="word"><span class="word__in">Diseños</span></span> <span class="word"><span class="word__in">creados</span></span></span>
-          <span class="hero__line"><span class="word"><span class="word__in">en</span></span> <span class="word word--italic"><em class="word__in rainbow-text">RIVUZ</em></span></span>
+          <span class="hero__line"><span class="word" style="--wi:0"><span class="word__in">Diseños</span></span> <span class="word" style="--wi:1"><span class="word__in">creados</span></span></span>
+          <span class="hero__line"><span class="word" style="--wi:2"><span class="word__in">en</span></span> <span class="word word--italic" style="--wi:3"><em class="word__in rainbow-text">RIVUZ</em></span></span>
         </h1>
         <a class="btn-rainbow hero__cta" href="#proyectos" data-magnetic>
           <span class="btn-rainbow__ring" aria-hidden="true"></span>

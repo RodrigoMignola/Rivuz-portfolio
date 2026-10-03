@@ -6,6 +6,7 @@
    2. Reset + base         6. Nav
    3. Tipografía           7. Hero + collage
    4. Utilidades           8. Proyectos (carrusel / acordeón)
+                           9. Motion: progreso, cursor, entradas, parallax, revelado
    ========================================================================== */
 
 /* 1. DESIGN TOKENS ======================================================== */
@@ -721,4 +722,172 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .card.is-open { flex-basis: var(--card-wide); }
   .card.is-open .card__body { opacity: 1; transform: none; transition-delay: 150ms; }
   .card:not(.is-open) .card__frame::after { opacity: 1; }
+}
+
+/* Pin (desktop + GSAP): el viewport deja de scrollear y el track se mueve con transform */
+.projects.is-pinned .projects__pin {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: calc(var(--nav-height) + var(--nav-offset));
+}
+.projects.is-pinned .projects__viewport { overflow-x: clip; overflow-y: visible; }
+.projects.is-pinned .projects__track { will-change: transform; }
+
+/* 9. MOTION ==============================================================
+   Todo anima solo transform/opacity. Con prefers-reduced-motion: reduce,
+   no corre nada y todo queda visible en su estado final. */
+
+/* Barra de progreso de scroll */
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: var(--z-progress);
+  height: 2px;
+  pointer-events: none;
+}
+.scroll-progress__bar {
+  display: block;
+  height: 100%;
+  background: var(--color-portrait-ink);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--progress, 0));
+}
+@supports (animation-timeline: scroll()) {
+  .scroll-progress__bar {
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes progress-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Cursor personalizado (solo puntero fino; lo crea main.js) */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-cursor);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.cursor.is-visible { opacity: 1; }
+.cursor__dot,
+.cursor__bubble {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  will-change: transform;
+}
+.cursor__dot {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  background: var(--color-portrait-ink);
+  transition: scale var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.cursor__bubble {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  background: var(--color-portrait-ink);
+  color: var(--color-white-canvas);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.025em;
+  scale: 0.2;
+  opacity: 0;
+  transition: scale var(--dur-base) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.cursor.is-link .cursor__dot { scale: 2.6; opacity: 0.18; }
+.cursor.is-view .cursor__dot { scale: 0; }
+.cursor.is-view .cursor__bubble { scale: 1; opacity: 1; }
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button { cursor: none; }
+
+/* Botones magnéticos: usan la propiedad `translate` (se suma al transform propio) */
+[data-magnetic] { transition: translate var(--dur-base) var(--ease-out); }
+[data-magnetic].is-magnet { transition-duration: 120ms; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+
+  /* Borde arcoíris animado del CTA */
+  .btn-rainbow__ring::before { animation: ring-flow 7s linear infinite; }
+
+  /* Entrada del hero: palabras con máscara, luego eyebrow, CTA y collage escalonado */
+  .hero__eyebrow { animation: fade-up var(--dur-slow) var(--ease-out) 80ms both; }
+  .word__in { animation: word-in var(--dur-slow) var(--ease-out) calc(160ms + var(--wi, 0) * 80ms) both; }
+  .hero__cta { animation: fade-up var(--dur-slow) var(--ease-out) 560ms both; }
+  .polaroid { animation: polaroid-in var(--dur-slow) var(--ease-out) calc(300ms + var(--i, 0) * 90ms) both; }
+
+}
+
+@keyframes ring-flow { to { transform: translateX(-50%); } }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes word-in {
+  from { transform: translateY(110%) rotate(4deg); }
+  to { transform: none; }
+}
+/* Las cards llegan más inclinadas y se enderezan hasta su ángulo final */
+@keyframes polaroid-in {
+  from { opacity: 0; transform: translateY(48px) rotate(calc(var(--r) * 2.6)) scale(0.88); }
+  to { opacity: 1; transform: rotate(var(--r)); }
+}
+
+/* Parallax de scroll del collage (CSS scroll-driven; fallback JS en main.js) */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .collage__item {
+      animation: collage-parallax linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 100vh;
+    }
+  }
+}
+@keyframes collage-parallax {
+  to { transform: translate3d(0, calc(var(--depth, 0.5) * -240px), 0); }
+}
+
+/* Revelado al scroll: fade + translate + leve scale, con stagger (--i).
+   CSS view-timeline donde hay soporte; si no, IntersectionObserver (.reveal-io). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal] {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--i, 0) * 8%) entry calc(70% + var(--i, 0) * 8%);
+    }
+  }
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-io [data-reveal] {
+    opacity: 0;
+    transform: translateY(32px) scale(0.97);
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  .reveal-io [data-reveal].is-in { opacity: 1; transform: none; }
+}
+
+/* Reduced motion: sin animaciones ni transiciones de movimiento, todo visible */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
