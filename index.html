@@ -145,12 +145,19 @@
       <div class="container contact__inner">
         <h2 class="heading-lg contact__title" id="contact-title" data-reveal>¿Trabajamos <em class="gradient-text">juntos</em>?</h2>
         <ul class="contact__links" role="list" data-reveal style="--i:1">
-          <li>
-            <a class="btn-gradient" href="mailto:mignolarodrigo@gmail.com" data-magnetic>
+          <li class="contact__email">
+            <!-- El email se ve completo; al tocarlo se copia (main.js). Sin JS igual queda legible. -->
+            <button class="btn-gradient email-copy" type="button" data-copy="mignolarodrigo@gmail.com" aria-label="Copiar email: mignolarodrigo@gmail.com" data-magnetic>
               <span class="btn-gradient__ring" aria-hidden="true"></span>
-              <span>Email</span>
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
-            </a>
+              <span class="email-copy__text">mignolarodrigo@gmail.com</span>
+              <span class="email-copy__icon" aria-hidden="true">
+                <svg class="icon icon--copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A1.5 1.5 0 0 1 6.5 5H15"/></svg>
+                <svg class="icon icon--check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+              </span>
+              <span class="email-copy__tip" aria-hidden="true" data-copy-tip>Copiar</span>
+            </button>
+            <span class="visually-hidden" aria-live="polite" data-copy-status></span>
           </li>
           <li>
             <a class="ghost-link ghost-link--arrow" href="https://wa.me/543447625627" target="_blank" rel="noopener noreferrer" data-magnetic>
