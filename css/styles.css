@@ -896,9 +896,53 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   align-items: center;
   justify-content: center;
   gap: var(--spacing-12) var(--spacing-4);
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-24); /* espacio para el globito "Copiado" */
 }
 .contact__links li:first-child { margin-right: var(--spacing-8); }
+/* Email: se muestra completo y se copia al tocarlo */
+.contact__email { position: relative; }
+.email-copy { gap: 10px; padding-inline: 18px 14px; cursor: copy; }
+.email-copy__text { font-weight: var(--font-weight-medium); letter-spacing: 0.005em; }
+.email-copy__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-tags);
+  background: var(--surface-tinted-wash);
+}
+.email-copy__icon .icon { position: absolute; width: 16px; height: 16px; transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out); }
+.email-copy__icon .icon--check { opacity: 0; transform: scale(0.5); }
+.email-copy.is-copied .icon--copy { opacity: 0; transform: scale(0.5); }
+.email-copy.is-copied .icon--check { opacity: 1; transform: none; }
+/* Globito: "Copiar" en hover/foco, "¡Copiado!" al copiar */
+.email-copy__tip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  padding: 6px 12px;
+  border-radius: var(--radius-tags);
+  background: var(--color-portrait-ink);
+  color: var(--color-white-canvas);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .email-copy:hover .email-copy__tip { opacity: 1; transform: translate(-50%, 0); }
+}
+.email-copy:focus-visible .email-copy__tip,
+.email-copy.is-copied .email-copy__tip,
+.email-copy.is-tip .email-copy__tip { opacity: 1; transform: translate(-50%, 0); }
+@media (max-width: 380px) {
+  .email-copy { gap: 8px; padding-inline: 14px 10px; font-size: 15px; }
+}
+
 .ghost-link--arrow { gap: var(--spacing-4); padding-inline: 10px; font-size: 15px; }
 @media (min-width: 768px) {
   .ghost-link--arrow { padding-inline: var(--spacing-16); font-size: var(--text-body); }

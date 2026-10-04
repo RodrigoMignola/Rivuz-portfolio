@@ -736,6 +736,12 @@ function initProjectsPin(ctl) {
   const setup = () => {
     const { gsap, ScrollTrigger } = window;
     gsap.registerPlugin(ScrollTrigger);
+    // El CSS usa scroll-behavior: smooth (anclas del nav). Mientras ScrollTrigger recalcula
+    // mueve el scroll internamente: si ese movimiento es "suave", mide mal y el pin queda
+    // corrido (la sección terminaba encima del hero al filtrar). Se desactiva solo durante el cálculo.
+    const root = document.documentElement;
+    ScrollTrigger.addEventListener('refreshInit', () => { root.style.scrollBehavior = 'auto'; });
+    ScrollTrigger.addEventListener('refresh', () => { root.style.scrollBehavior = ''; });
     const mm = gsap.matchMedia();
 
     mm.add(PIN_QUERY, () => {
@@ -781,61 +787,54 @@ function initProjectsPin(ctl) {
         return Math.max(Math.min(x, 0), Math.min(vw - totalW, 0));
       };
 
-      let st = null;
-      // (Re)construye el pin según la cantidad de cards visibles (cambia con el filtro)
-      const build = () => {
-        st?.kill();
-        st = null;
-        ctl.goTo = null;
-        gsap.set(track, { x: 0 });
-        const n = count();
-        const pinnable = n > 1;
-        section.classList.toggle('is-pinned', pinnable);
-        ctl.pinned = pinnable;
-        if (!pinnable) return;
-        viewport.scrollLeft = 0;
-        measure();
-        st = ScrollTrigger.create({
-          trigger: pinEl,
-          pin: true,
-          start: 'top top',
-          end: () => '+=' + Math.round((count() - 1) * innerHeight * 0.7),
-          invalidateOnRefresh: true,
-          onRefresh: () => { measure(); moveTo(ctl.active, true); },
-          onUpdate: (self) => {
-            const i = Math.round(self.progress * (count() - 1));
-            if (i !== ctl.active) {
+      // Un solo pin para siempre. Al filtrar NO se destruye ni se recrea (eso dejaba la
+      // sección "pegada" encima del hero): solo se recalcula con ScrollTrigger.refresh().
+      // El largo depende de la cantidad de cards visibles (con 1 card queda casi en 0).
+      const span = () => Math.max(1, Math.round((count() - 1) * innerHeight * 0.7));
+      section.classList.add('is-pinned');
+      ctl.pinned = true;
+      viewport.scrollLeft = 0;
+      measure();
+      const st = ScrollTrigger.create({
+        trigger: pinEl,
+        pin: true,
+        start: 'top top',
+        end: () => '+=' + span(),
+        invalidateOnRefresh: true,
+        onRefresh: () => { measure(); moveTo(ctl.active, true); },
+        onUpdate: (self) => {
+          const i = Math.round(self.progress * Math.max(count() - 1, 0));
+          if (i !== ctl.active) {
             ctl.hovered = null; // al scrollear manda el scroll, aunque el mouse esté sobre una card
             ctl.setActive(i);
             moveTo(i);
           }
-          },
-        });
-        // Flechas y foco con teclado: navegan moviendo el scroll vertical
-        ctl.goTo = (i) => {
-          i = Math.max(0, Math.min(count() - 1, i));
-          const y = st.start + (st.end - st.start) * (i / (count() - 1));
-          scrollTo({ top: y, behavior: 'smooth' });
-        };
-        moveTo(ctl.active, true);
+        },
+      });
+
+      // Flechas y foco con teclado: navegan moviendo el scroll vertical
+      ctl.goTo = (i) => {
+        const n = count();
+        i = Math.max(0, Math.min(n - 1, i));
+        const y = n > 1 ? st.start + (st.end - st.start) * (i / (n - 1)) : st.start;
+        scrollTo({ top: y, behavior: 'smooth' });
       };
       ctl.onOpen = (i) => {
-        if (!st) return;
         if (ctl.hovered === null) moveTo(ctl.active);
         else gsap.to(track, { x: revealX(i), duration: 0.9, ease: 'power3.out', overwrite: true });
       };
+      moveTo(ctl.active, true);
 
-      build();
-      // Al filtrar: reconstruir y volver al inicio de la sección (sin saltos raros)
+      // Al filtrar: recalcular el pin y volver al inicio de la sección
       ctl.onCardsChange = () => {
-        build();
+        gsap.set(track, { x: 0 });
         ScrollTrigger.refresh();
-        const top = st ? st.start : pinEl.getBoundingClientRect().top + scrollY;
-        scrollTo({ top, behavior: 'instant' });
+        scrollTo({ top: st.start, behavior: 'instant' });
+        moveTo(0, true);
       };
 
       return () => {
-        st?.kill();
+        st?.kill(true);
         section.classList.remove('is-pinned');
         ctl.pinned = false;
         ctl.goTo = null;
@@ -859,6 +858,63 @@ function initProjectsPin(ctl) {
   else mq.addEventListener('change', maybeLoad, { once: true });
 }
 
+/* Contacto: copiar el email al portapapeles -------------------------------- */
+function initCopyEmail() {
+  const btn = $('[data-copy]');
+  if (!btn) return;
+  const tip = $('[data-copy-tip]', btn);
+  const status = $('[data-copy-status]');
+  const text = btn.dataset.copy;
+  let timer = 0;
+
+  // Respaldo para navegadores sin Clipboard API (o sin https)
+  const legacyCopy = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.append(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    return ok;
+  };
+  // Último recurso: dejar el email seleccionado para copiarlo a mano
+  const selectText = () => {
+    const range = document.createRange();
+    range.selectNodeContents($('.email-copy__text', btn));
+    const sel = getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  };
+
+  const feedback = (msg, copied) => {
+    tip.textContent = msg;
+    if (status) status.textContent = msg;
+    btn.classList.toggle('is-copied', copied);
+    btn.classList.add('is-tip');
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      btn.classList.remove('is-copied', 'is-tip');
+      tip.textContent = 'Copiar';
+      if (status) status.textContent = '';
+    }, 2000);
+  };
+
+  btn.addEventListener('click', async () => {
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch (e) {
+      ok = legacyCopy();
+    }
+    if (ok) feedback('¡Copiado!', true);
+    else { selectText(); feedback('Seleccionado: copialo con Ctrl+C', false); }
+  });
+}
+
 /* Footer: año actual */
 function initYear() {
   const el = $('[data-year]');
@@ -873,6 +929,7 @@ initFilters(projectsCtl);
 initGallery();
 initNav();
 initYear();
+initCopyEmail();
 initProgressFallback();
 initRevealFallback();
 initCollageParallax();
